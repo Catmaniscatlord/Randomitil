@@ -1,0 +1,10 @@
+
+1. Set up black dot storage (David)
+2. Simple Animation Tests (Remy)
+3. Set up Blue dot storage (David)
+4. Basic GUI (Remy)
+5. Set up diamond expansion (David)
+6. Domino movement (Remy)
+7. Domino elimation (David)
+8. Domino replacement (Remy)
+9. Advanced Animation (Remy)
