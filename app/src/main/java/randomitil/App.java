@@ -3,16 +3,29 @@
  */
 package randomitil;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+
 import randomitil.anim_test.*;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+    public static void main(String[] args) {
+    
+        // DominoDrawer.setup("Graphics Test");
 
-public static void main(String[] args) 
-    {
-    System.out.println(new App().getGreeting());
-    DominoDrawer.setup("Graphics Test");
+        AztecDiamond tiles = new AztecDiamond();
+
+        tiles.setTile(0, 0, new Domino(Direction.DOWN, false));
+        tiles.setTile(0, 1, new Domino(Direction.LEFT, false));
+        tiles.setTile(1, 0, new Domino(Direction.RIGHT, false));
+        tiles.setTile(1, 1, new Domino(Direction.UP, false));
+
+
+        System.out.println(tiles.toString());
+
+        tiles.expand(3);
+        System.out.println(tiles.toString());
     }
 }
