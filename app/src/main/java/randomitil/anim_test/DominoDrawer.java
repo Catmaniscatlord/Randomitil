@@ -53,6 +53,8 @@ public class DominoDrawer extends Canvas {
         try {
             Thread.sleep((long) (1000 / fps));
         } catch (InterruptedException e) {
+            System.out.println(e);
+            e.printStackTrace();
             return;
         }
 
