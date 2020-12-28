@@ -1,6 +1,6 @@
 
 1. Set up black dot storage (David)
-2. Simple Animation Tests (Remy)
+2. Simple Animation Tests (Remy) - DONE
 3. Set up Blue dot storage (David)
 4. Basic GUI (Remy)
 5. Set up diamond expansion (David)

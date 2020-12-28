@@ -4,15 +4,21 @@ package randomitil.anim_test;
 // Imports
 import java.awt.*;
 import javax.swing.*;
+import randomitil.*;
+import java.lang.Math;
 
 // Class Declaration
 public class DominoDrawer extends Canvas {
     // Serialization
     private static final long serialVersionUID = 3337828037218852291L;
 
-    // Global Variable
+    // Global Variables
     final int fps = 30;
     int frame_num = 0;
+
+    int tileSize = -1;
+    AztecDiamond mainTiles;
+    AztecDiamond nextTiles;
 
     /// Setup Method ///
     public static void setup(String window_name) {
@@ -21,7 +27,7 @@ public class DominoDrawer extends Canvas {
         Canvas canvas = new DominoDrawer();
 
         // Setup Canvas
-        canvas.setSize(400, 400);
+        canvas.setSize(600, 600);
         canvas.setBackground(new Color(200, 200, 200));
 
         // Setup frame
@@ -30,11 +36,43 @@ public class DominoDrawer extends Canvas {
         frame.setVisible(true);
     }
 
+    /// Update Diamond ///
+    public void updateDiamond(AztecDiamond oldTiles, AztecDiamond nextTiles, int newSize) {
+        // Update diamond and variables
+        this.mainTiles = oldTiles;
+        this.nextTiles = nextTiles;
+        this.tileSize = newSize;
+    }
+
+    /// Diamond Grid Method ///
+    public void draw_grid(Graphics g, int paintOffset, int paintSize) {
+        // Calculate
+        int paintCenter = (int) (Math.round(paintSize / 2)) + paintOffset;
+        int cellSize = (int) (Math.round(paintSize / tileSize));
+
+        // Draw Bounding Box
+        g.drawRect(paintOffset - 25, paintOffset - 25, paintSize + 50, paintSize + 50);
+
+        // Draw Diamond
+        if (tileSize > 0) {
+            for (int i = 0; i < tileSize / 2; i++) {
+                for (int k = 0; k < tileSize / 2 - i; k++) {
+                    // Diamond Top
+                    g.drawRect(paintCenter + k * cellSize, paintCenter - (i + 1) * cellSize, cellSize, cellSize);
+                    g.drawRect(paintCenter - (k + 1) * cellSize, paintCenter - (i + 1) * cellSize, cellSize, cellSize);
+
+                    // Diamond bottom
+                    g.drawRect(paintCenter + k * cellSize, paintCenter + i * cellSize, cellSize,cellSize);
+                    g.drawRect(paintCenter - (k + 1) * cellSize, paintCenter + i * cellSize,cellSize, cellSize);
+                }
+            }
+        }
+    }
+
     /// Paint Method ///
     public void paint(Graphics g) {
-        // Draw
-        g.setColor(Color.RED);
-        g.fillOval(100 + frame_num * 5, 100, 200, 200);
+        // Draw grid
+        draw_grid(g, 50, 500);
 
         // Advance to next frame
         nextFrame();
