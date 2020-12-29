@@ -8,8 +8,8 @@ public class AztecDiamond {
     private int size;
     
     Domino[][] tiles;
-    int width;
-    int height;
+    private int width;
+    private int height;
 
     public AztecDiamond() {
         this(2, 2);
@@ -30,7 +30,7 @@ public class AztecDiamond {
     private void chamferTiles() {
         int chamferSize = Math.abs(this.width - this.height);
         boolean[][] chamferArray = new boolean[chamferSize][];
-        //this creates an array of decrasing subarray size
+        //this creates an array of decreasing subarray size
         for (int i = 0; i < chamferSize; i++) {
             chamferArray[i] = new boolean[chamferSize - i];
         }
@@ -139,43 +139,60 @@ public class AztecDiamond {
         }
         // this checks that all of its direct neighbors are empty
 
+        if(!hasNoNeighbors(x, y))
+            return 1;
+        
+        return 0;
+    }
+
+    public Domino[][] getTileNeighbors(int x, int y) {
+        Domino[][] neighbors = new Domino[3][3];
+        int neighborX;
+        int neighborY;
+        for (int i = 0; i < neighbors.length; i++) {
+            for (int j = 0; j < neighbors[i].length; j++) {
+                neighborY = y + i - 1;
+                neighborX = x + j - 1;
+                if (neighborX >= 0 && neighborY >= 0 && neighborX < this.size && neighborY < this.size) {
+                   if((((x + y) % 2 == 0 && ((i == 0 && j == 0) || ( i == 2 && j == 2))) || 
+                       ((x + y) % 2 == 1 && ((i == 2 && j == 0) || ( i == 0 && j == 2))))) {
+                            neighbors[i][j] = new Domino(false);
+                    }
+                    else
+                        neighbors[i][j] = getTile(neighborX, neighborY);
+                }
+                else 
+                    neighbors[i][j] = new Domino(false);
+            }
+        }
+        //this makes sure that we dont return the domino as one of its neighbors
+        neighbors[1][1] = null;
+        return neighbors;
+    }
+
+    public boolean hasNoNeighbors(int x, int y) {
+        Set<Domino> neighbors = new HashSet<Domino>();
+        Domino[][] tileNeighbors = getTileNeighbors(x, y);
+        for (int i = 0; i < tileNeighbors.length; i++) {
+            for (int j = 0; j < tileNeighbors[i].length; j++) {
+                if(!(((x + y) % 2 == 0 && ((i == 0 && j == 0) || ( i == 2 && j == 2))) || 
+                     ((x + y) % 2 == 1 && ((i == 2 && j == 0) || ( i == 0 && j == 2))))) {
+                        neighbors.add(tileNeighbors[i][j]);
+                } 
+            }
+        }
         /*
          * most of the time the neighbors will only contain null when it contains
          * another domino there ius a possiblity that the domino is a placeholder in the
          * array in which case we move on
          */
-        if (getTileNeighbors(x, y).size() != 1) {
-            for (Domino d : getTileNeighbors(x, y)) {
+        if (neighbors.size() != 1) {
+            for (Domino d : neighbors) {
                 if (d.isPlaceable())
-                    return 1;
+                    return false;
             }
         }
-        return 0;
-    }
-
-    public Set<Domino> getTileNeighbors(int x, int y) {
-        Set<Domino> neighbors = new HashSet<Domino>();
-        if (x != 0)
-            neighbors.add(getTile(x - 1, y));
-        if (y != 0)
-            neighbors.add(getTile(x, y - 1));
-        if (x != this.width)
-            neighbors.add(getTile(x + 1, y));
-        if (y != this.height)
-            neighbors.add(getTile(x, y + 1));
-        if (x + y % 2 == 0) {
-            if (x != 0 && y != this.height)
-                neighbors.add(getTile(x - 1, y + 1));
-            if (x != this.width && y != 0)
-                neighbors.add(getTile(x + 1, y - 1));
-        } else {
-            if (x != 0 && y != 0)
-                neighbors.add(getTile(x - 1, y - 1));
-            if (x != this.width && y != this.height)
-                neighbors.add(getTile(x + 1, y + 1));
-        }
-
-        return neighbors;
+        return true;
     }
 
     public Boolean isEmpty() {
@@ -213,6 +230,10 @@ public class AztecDiamond {
 
     public int getWidth() {
         return width;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     @Override
