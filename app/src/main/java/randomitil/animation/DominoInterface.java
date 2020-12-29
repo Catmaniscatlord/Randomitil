@@ -10,16 +10,20 @@ public class DominoInterface extends JFrame {
     // Serialization
     private static final long serialVersionUID = 3327828037218852291L;
 
+    // Globals
+    public DominoDrawer drawer = null;
+
     /// Constructor ///
-    public DominoInterface() {
+    public DominoInterface(DominoDrawer _drawer) {
         // Initialize UI
-        initUI();
+        initUI(_drawer);
     }
     
     /// Initialization ///
-    private void initUI() {
+    private void initUI(DominoDrawer _drawer) {
         // Add Domino Drawing Region
-        add(new DominoDrawer());
+        this.drawer = _drawer;
+        add(this.drawer);
 
         // Setup
         setResizable(true);
@@ -30,10 +34,10 @@ public class DominoInterface extends JFrame {
     }
 
     /// Setup Method ///
-    public static void setup() {
+    public static void setup(DominoDrawer _drawer) {
         EventQueue.invokeLater(() -> {
             // Create Self
-            JFrame ex = new DominoInterface();
+            JFrame ex = new DominoInterface(_drawer);
 
             // Set Visibility
             ex.setVisible(true);
