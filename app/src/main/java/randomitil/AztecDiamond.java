@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AztecDiamond {
-    
-    private int size;
-    
+
     Domino[][] tiles;
+
     private int width;
     private int height;
+    private int size;
 
     public AztecDiamond() {
         this(2, 2);
@@ -30,23 +30,22 @@ public class AztecDiamond {
     private void chamferTiles() {
         int chamferSize = Math.abs(this.width - this.height);
         boolean[][] chamferArray = new boolean[chamferSize][];
-        //this creates an array of decreasing subarray size
+        // this creates an array of decreasing subarray size
         for (int i = 0; i < chamferSize; i++) {
             chamferArray[i] = new boolean[chamferSize - i];
         }
-        if(this.width < this.height) {
+        if (this.width < this.height) {
             for (int i = 0; i < chamferArray.length; i++) {
                 for (int j = 0; j < chamferArray[i].length; j++) {
                     this.tiles[i][j] = new Domino(false);
-                    this.tiles[this.size-i-1][this.size-j-1] = new Domino(false);
+                    this.tiles[this.size - i - 1][this.size - j - 1] = new Domino(false);
                 }
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < chamferArray.length; i++) {
                 for (int j = 0; j < chamferArray[i].length; j++) {
-                    this.tiles[i][this.size-j-1] = new Domino(false);
-                    this.tiles[this.size-i-1][j] = new Domino(false);
+                    this.tiles[i][this.size - j - 1] = new Domino(false);
+                    this.tiles[this.size - i - 1][j] = new Domino(false);
                 }
             }
         }
@@ -69,8 +68,8 @@ public class AztecDiamond {
             }
         }
         int newSize = this.size + 2 * size;
-        expandWidth(size,this.size,newSize);
-        expandHeight(size,this.size,newSize);
+        expandWidth(size, this.size, newSize);
+        expandHeight(size, this.size, newSize);
         this.size = newSize;
         chamferTiles();
     }
@@ -84,7 +83,7 @@ public class AztecDiamond {
         }
     }
 
-    private void expandHeight(int expansionSize, int oldSize,int newSize) {
+    private void expandHeight(int expansionSize, int oldSize, int newSize) {
         Domino[][] tempTiles = this.tiles.clone();
         tiles = new Domino[newSize][newSize];
 
@@ -139,9 +138,9 @@ public class AztecDiamond {
         }
         // this checks that all of its direct neighbors are empty
 
-        if(!hasNoNeighbors(x, y))
+        if (!hasNoNeighbors(x, y))
             return 1;
-        
+
         return 0;
     }
 
@@ -154,18 +153,16 @@ public class AztecDiamond {
                 neighborY = y + i - 1;
                 neighborX = x + j - 1;
                 if (neighborX >= 0 && neighborY >= 0 && neighborX < this.size && neighborY < this.size) {
-                   if((((x + y) % 2 == 0 && ((i == 0 && j == 0) || ( i == 2 && j == 2))) || 
-                       ((x + y) % 2 == 1 && ((i == 2 && j == 0) || ( i == 0 && j == 2))))) {
-                            neighbors[i][j] = new Domino(false);
-                    }
-                    else
+                    if (((x + y) % 2 == 0 && ((i == 0 && j == 0) || (i == 2 && j == 2)))
+                            || ((x + y) % 2 == 1 && ((i == 2 && j == 0) || (i == 0 && j == 2)))) {
+                        neighbors[i][j] = new Domino(false);
+                    } else
                         neighbors[i][j] = getTile(neighborX, neighborY);
-                }
-                else 
+                } else
                     neighbors[i][j] = new Domino(false);
             }
         }
-        //this makes sure that we dont return the domino as one of its neighbors
+        // this makes sure that we dont return the domino as one of its neighbors
         neighbors[1][1] = null;
         return neighbors;
     }
@@ -175,10 +172,10 @@ public class AztecDiamond {
         Domino[][] tileNeighbors = getTileNeighbors(x, y);
         for (int i = 0; i < tileNeighbors.length; i++) {
             for (int j = 0; j < tileNeighbors[i].length; j++) {
-                if(!(((x + y) % 2 == 0 && ((i == 0 && j == 0) || ( i == 2 && j == 2))) || 
-                     ((x + y) % 2 == 1 && ((i == 2 && j == 0) || ( i == 0 && j == 2))))) {
-                        neighbors.add(tileNeighbors[i][j]);
-                } 
+                if (!(((x + y) % 2 == 0 && ((i == 0 && j == 0) || (i == 2 && j == 2)))
+                        || ((x + y) % 2 == 1 && ((i == 2 && j == 0) || (i == 0 && j == 2))))) {
+                    neighbors.add(tileNeighbors[i][j]);
+                }
             }
         }
         /*
