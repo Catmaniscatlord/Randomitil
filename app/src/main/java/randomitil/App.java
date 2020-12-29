@@ -1,10 +1,10 @@
 package randomitil;
 
-import randomitil.anim_test.*;
+import randomitil.animation.*;
 
 public class App {
     public static void main(String[] args) {
     
-        DominoDrawer.setup("Graphics Test");
+        DominoInterface.setup();
     }
 }
