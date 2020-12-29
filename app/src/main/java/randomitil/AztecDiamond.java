@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AztecDiamond {
+    
+    private int size;
+    
     Domino[][] tiles;
     int width;
     int height;
@@ -13,36 +16,79 @@ public class AztecDiamond {
     }
 
     public AztecDiamond(int width, int height) {
-        tiles = new Domino[height][width];
+        createTiles(width, height);
+    }
+
+    private void createTiles(int width, int height) {
+        this.size = (width <= height ? height : width);
+        this.tiles = new Domino[this.size][this.size];
         this.width = width;
         this.height = height;
+        chamferTiles();
     }
 
-    public void expand(int size) {
-        expandWidth(size);
-        expandHeight(size);
-    }
-
-    private void expandWidth(int width) {
-        int originalWidth = this.width;
-        this.width += 2 * width;
-
-        Domino[][] tempTiles = this.tiles.clone();
-        tiles = new Domino[this.height][this.width];
-
-        for (int i = 0; i < this.height; i++) {
-            System.arraycopy(tempTiles[i], 0, tiles[i], width, originalWidth);
+    private void chamferTiles() {
+        int chamferSize = Math.abs(this.width - this.height);
+        boolean[][] chamferArray = new boolean[chamferSize][];
+        //this creates an array of decrasing subarray size
+        for (int i = 0; i < chamferSize; i++) {
+            chamferArray[i] = new boolean[chamferSize - i];
+        }
+        if(this.width < this.height) {
+            for (int i = 0; i < chamferArray.length; i++) {
+                for (int j = 0; j < chamferArray[i].length; j++) {
+                    this.tiles[i][j] = new Domino(false);
+                    this.tiles[this.size-i-1][this.size-j-1] = new Domino(false);
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < chamferArray.length; i++) {
+                for (int j = 0; j < chamferArray[i].length; j++) {
+                    this.tiles[i][this.size-j-1] = new Domino(false);
+                    this.tiles[this.size-i-1][j] = new Domino(false);
+                }
+            }
         }
     }
 
-    private void expandHeight(int height) {
-        int originalHeight = this.height;
-        this.height += 2 * height;
+    public void expand(int size) {
 
+        /*
+         * this will remove all nonplaceable tiles before we expand non-placeable tiles
+         * only exist if width and height arent equal
+         */
+        if (this.width != this.height) {
+            for (int i = 0; i < this.size; i++) {
+                for (int j = 0; j < this.size; j++) {
+                    if (tiles[i][j] != null) {
+                        if (!tiles[i][j].isPlaceable())
+                            tiles[i][j] = null;
+                    }
+                }
+            }
+        }
+        int newSize = this.size + 2 * size;
+        expandWidth(size,this.size,newSize);
+        expandHeight(size,this.size,newSize);
+        this.size = newSize;
+        chamferTiles();
+    }
+
+    private void expandWidth(int expansionSize, int oldSize, int newSize) {
         Domino[][] tempTiles = this.tiles.clone();
-        tiles = new Domino[this.height][this.width];
+        tiles = new Domino[oldSize][newSize];
 
-        System.arraycopy(tempTiles, 0, tiles, height, originalHeight);
+        for (int i = 0; i < oldSize; i++) {
+            System.arraycopy(tempTiles[i], 0, tiles[i], expansionSize, oldSize);
+        }
+    }
+
+    private void expandHeight(int expansionSize, int oldSize,int newSize) {
+        Domino[][] tempTiles = this.tiles.clone();
+        tiles = new Domino[newSize][newSize];
+
+        System.arraycopy(tempTiles, 0, tiles, expansionSize, oldSize);
     }
 
     /*
@@ -50,13 +96,13 @@ public class AztecDiamond {
      * dominos that are invalid will stay in the array
      * 
      * if the return is empty then the domino layout is valid
-     **/
+     */
 
     public AztecDiamond checkTiles() {
         AztecDiamond checkArray = new AztecDiamond(this.width, this.height);
 
-        for (int i = 0; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
                 if (checkTile(i, j) != 0) {
                     checkArray.setTile(i, j, getTile(i, j));
                 }
@@ -72,7 +118,13 @@ public class AztecDiamond {
     public int checkTile(int x, int y) {
 
         Domino tile = getTile(x, y);
+
+        /*
+         * if the tile is null or is not a valid place to put a domino return 0
+         */
         if (tile == null)
+            return 0;
+        if (!tile.isPlaceable())
             return 0;
 
         Direction tileDirection = tile.getDirection();
@@ -86,13 +138,22 @@ public class AztecDiamond {
             }
         }
         // this checks that all of its direct neighbors are empty
-        if (getTileNeighobors(x, y).size() != 1) {
-            return 1;
+
+        /*
+         * most of the time the neighbors will only contain null when it contains
+         * another domino there ius a possiblity that the domino is a placeholder in the
+         * array in which case we move on
+         */
+        if (getTileNeighbors(x, y).size() != 1) {
+            for (Domino d : getTileNeighbors(x, y)) {
+                if (d.isPlaceable())
+                    return 1;
+            }
         }
         return 0;
     }
 
-    public Set<Domino> getTileNeighobors(int x, int y) {
+    public Set<Domino> getTileNeighbors(int x, int y) {
         Set<Domino> neighbors = new HashSet<Domino>();
         if (x != 0)
             neighbors.add(getTile(x - 1, y));
@@ -158,13 +219,15 @@ public class AztecDiamond {
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("[\n");
-        for (int i = 0; i < this.width; i++) {
+        for (int i = 0; i < this.size; i++) {
             buf.append('[');
-            for (int j = 0; j < this.height; j++) {
+            for (int j = 0; j < this.size; j++) {
                 Domino tile = getTile(i, j);
                 if (tile != null) {
-                    if (tile.direction == Direction.LEFT)
-                        buf.append(" <- "); // →
+                    if (!tile.isPlaceable())
+                        buf.append("####");
+                    else if (tile.direction == Direction.LEFT)
+                        buf.append(" <- ");
                     else if (tile.direction == Direction.RIGHT)
                         buf.append(" -> ");
                     else if (tile.direction == Direction.UP)
@@ -176,7 +239,7 @@ public class AztecDiamond {
                 } else {
                     buf.append("null");
                 }
-                if (j != this.height - 1)
+                if (j != this.size - 1)
                     buf.append(",");
             }
             buf.append("]\n");
