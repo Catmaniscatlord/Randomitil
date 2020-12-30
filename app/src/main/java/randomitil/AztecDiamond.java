@@ -114,9 +114,9 @@ public class AztecDiamond {
      * returns 0 if the check passes, 1 if there is an error
      **/
 
-    public int checkTile(int x, int y) {
+    public int checkTile(int y, int x) {
 
-        Domino tile = getTile(x, y);
+        Domino tile = getTile(y, x);
 
         /*
          * if the tile is null or is not a valid place to put a domino return 0
@@ -138,13 +138,13 @@ public class AztecDiamond {
         }
         // this checks that all of its direct neighbors are empty
 
-        if (!hasNoNeighbors(x, y))
+        if (tileHasNeighbors(y, x))
             return 1;
 
         return 0;
     }
 
-    public Domino[][] getTileNeighbors(int x, int y) {
+    public Domino[][] getTileNeighbors(int y, int x) {
         Domino[][] neighbors = new Domino[3][3];
         int neighborX;
         int neighborY;
@@ -157,7 +157,7 @@ public class AztecDiamond {
                             || ((x + y) % 2 == 1 && ((i == 2 && j == 0) || (i == 0 && j == 2)))) {
                         neighbors[i][j] = new Domino(false);
                     } else
-                        neighbors[i][j] = getTile(neighborX, neighborY);
+                        neighbors[i][j] = getTile(neighborY, neighborX);
                 } else
                     neighbors[i][j] = new Domino(false);
             }
@@ -167,7 +167,7 @@ public class AztecDiamond {
         return neighbors;
     }
 
-    public boolean hasNoNeighbors(int x, int y) {
+    public boolean tileHasNeighbors(int y, int x) {
         Set<Domino> neighbors = new HashSet<Domino>();
         Domino[][] tileNeighbors = getTileNeighbors(x, y);
         for (int i = 0; i < tileNeighbors.length; i++) {
@@ -180,16 +180,18 @@ public class AztecDiamond {
         }
         /*
          * most of the time the neighbors will only contain null when it contains
-         * another domino there ius a possiblity that the domino is a placeholder in the
+         * another domino there is a possiblity that the domino is a placeholder in the
          * array in which case we move on
          */
         if (neighbors.size() != 1) {
             for (Domino d : neighbors) {
-                if (d.isPlaceable())
-                    return false;
+                if(d != null) {
+                    if (d.isPlaceable())
+                        return true;
+                }
             }
         }
-        return true;
+        return false;
     }
 
     public Boolean isEmpty() {
@@ -205,12 +207,12 @@ public class AztecDiamond {
         return isEmpty;
     }
 
-    public void setTile(int x, int y, Domino domino) {
-        tiles[x][y] = domino;
+    public void setTile(int y, int x, Domino domino) {
+        tiles[y][x] = domino;
     }
 
-    public Domino getTile(int x, int y) {
-        return tiles[x][y];
+    public Domino getTile(int y, int x) {
+        return tiles[y][x];
     }
 
     public void setTiles(Domino[][] tiles) {
