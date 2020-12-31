@@ -101,11 +101,11 @@ public class DominoIteration {
     private void generateSquare(int y, int x) {
         double direction = rand.nextDouble();
         if (direction <= tilingBias) {
-            generateTileRand(y + 1, x, Orinetation.VERTICAL);
-            generateTileRand(y , x + 1, Orinetation.VERTICAL);
+            generateTileRand(y + 1, x, Orientation.VERTICAL);
+            generateTileRand(y , x + 1, Orientation.VERTICAL);
         } else {
-            generateTileRand(y, x, Orinetation.HORIZONTAL);
-            generateTileRand(y + 1, x + 1, Orinetation.HORIZONTAL);
+            generateTileRand(y, x, Orientation.HORIZONTAL);
+            generateTileRand(y + 1, x + 1, Orientation.HORIZONTAL);
         }
     }
 
@@ -113,15 +113,15 @@ public class DominoIteration {
         this.aztecDiamond.setTile(y, x, new Domino(direction, false, true));
     }
 
-    private void generateTileRand(int y, int x, Orinetation orinetation) {
+    private void generateTileRand(int y, int x, Orientation Orientation) {
         int direction = rand.nextInt(2); //generats either 1 or 0
-        if (orinetation == Orinetation.VERTICAL) {
+        if (Orientation == Orientation.VERTICAL) {
             if (direction == 0)
                 this.aztecDiamond.setTile(y, x, new Domino(Direction.UP, false, true));
             else
                 this.aztecDiamond.setTile(y, x, new Domino(Direction.DOWN, false, true));
         }
-        else if (orinetation == Orinetation.HORIZONTAL) {
+        else if (Orientation == Orientation.HORIZONTAL) {
             if (direction == 0)
                 this.aztecDiamond.setTile(y, x, new Domino(Direction.LEFT, false, true));
             else

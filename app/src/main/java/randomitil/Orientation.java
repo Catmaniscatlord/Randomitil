@@ -1,6 +1,6 @@
 package randomitil;
 
-public enum Orinetation
+public enum Orientation
 {
     HORIZONTAL,
     VERTICAL    
