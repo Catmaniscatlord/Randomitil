@@ -1,5 +1,6 @@
 package randomitil;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -128,7 +129,7 @@ public class AztecDiamond {
             return 0;
 
         Direction tileDirection = tile.getDirection();
-        if (getOrientation(y, x) == Orientation.VERTICAL) {
+        if (getOrientation(y, x) == Orientation.HORIZONTAL) {
             if (!(tileDirection == Direction.UP || tileDirection == Direction.DOWN)) {
                 return 1;
             }
@@ -154,11 +155,7 @@ public class AztecDiamond {
                 neighborY = y + i - 1;
                 neighborX = x + j - 1;
                 if (neighborX >= 0 && neighborY >= 0 && neighborX < this.size && neighborY < this.size) {
-                    if ((getOrientation(y, x) == Orientation.HORIZONTAL && ((i == 0 && j == 0) || (i == 2 && j == 2)))
-                        || (getOrientation(y, x) == Orientation.VERTICAL && ((i == 2 && j == 0) || (i == 0 && j == 2)))) {
-                        neighbors[i][j] = new Domino(false);
-                    } else
-                        neighbors[i][j] = getTile(neighborY, neighborX);
+                    neighbors[i][j] = getTile(neighborY, neighborX);
                 } else
                     neighbors[i][j] = new Domino(false);
             }
@@ -173,7 +170,10 @@ public class AztecDiamond {
         Domino[][] tileNeighbors = getTileNeighbors(y, x);
         for (int i = 0; i < tileNeighbors.length; i++) {
             for (int j = 0; j < tileNeighbors[i].length; j++) {
-                neighbors.add(tileNeighbors[i][j]);
+                if (!((getOrientation(y, x) == Orientation.HORIZONTAL && ((i == 0 && j == 2) || (i == 2 && j == 0)))
+                    || (getOrientation(y, x) == Orientation.VERTICAL && ((i == 0 && j == 0) || (i == 2 && j == 2))))) {
+                    neighbors.add(tileNeighbors[i][j]);
+                }
             }
         }
         /*
@@ -205,7 +205,7 @@ public class AztecDiamond {
     }
 
     public Orientation getOrientation(int y, int x) {
-        if ((y+x) % 2 == (this.height <= this.width ? 0 : 1))
+        if ((y + x) % 2 == (this.height <= this.width ? 1 : 0))
             return Orientation.HORIZONTAL;
         return Orientation.VERTICAL;
     }
@@ -247,18 +247,7 @@ public class AztecDiamond {
             for (int j = 0; j < this.size; j++) {
                 Domino tile = getTile(i, j);
                 if (tile != null) {
-                    if (!tile.isPlaceable())
-                        buf.append("####");
-                    else if (tile.direction == Direction.LEFT)
-                        buf.append(" <- ");
-                    else if (tile.direction == Direction.RIGHT)
-                        buf.append(" -> ");
-                    else if (tile.direction == Direction.UP)
-                        buf.append("  ^ ");
-                    else if (tile.direction == Direction.DOWN)
-                        buf.append(" \\/ ");
-                    else
-                        buf.append("oops");
+                    buf.append(tile.toString());
                 } else {
                     buf.append("null");
                 }

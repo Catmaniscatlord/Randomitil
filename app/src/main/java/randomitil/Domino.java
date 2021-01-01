@@ -46,4 +46,20 @@ public class Domino
     public void setPlaceable(boolean placeable) {
         this.placeable = placeable;
     }
+
+    @Override
+    public String toString() {
+        if (!this.placeable)
+            return "####";
+        else if (this.direction == Direction.LEFT)
+            return " <- ";
+        else if (this.direction == Direction.RIGHT)
+            return " -> ";
+        else if (this.direction == Direction.UP)
+            return "  ^ ";
+        else if (this.direction == Direction.DOWN)
+            return " \\/ ";
+
+        return "oops";
+    }
 }

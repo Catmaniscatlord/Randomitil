@@ -22,18 +22,17 @@ public class DominoIteration {
         this.emptyTiles = new boolean[this.aztecDiamond.getSize()][this.aztecDiamond.getSize()];
         for (int i = 0; i < this.emptyTiles.length; i++) {
             for (int j = 0; j < this.emptyTiles[i].length; j++) {
-                if (this.aztecDiamond.getTile(i, j) == null) {
-                    this.emptyTiles[i][j] = !this.aztecDiamond.tileHasNeighbors(i, j); 
-                } else {
-                    this.emptyTiles[i][j] = false;
+                if(aztecDiamond.getTile(i, j) == null) {    
+                    this.emptyTiles[i][j] = !this.aztecDiamond.tileHasNeighbors(i, j);
                 }
+                else
+                    this.emptyTiles[i][j] = false;
             }
         }
     }
     
     public void fillEmptyTiles() {
         findEmptyTiles();
-        System.out.println(Arrays.deepToString(emptyTiles));
         for (int i = 0; i < this.emptyTiles.length; i++) {
             for (int j = 0; j < this.emptyTiles[i].length; j++) {
                 if(this.emptyTiles[i][j]) {
@@ -73,8 +72,8 @@ public class DominoIteration {
         // as they aren't important
         for (int i = 0; i < this.emptyTiles.length - 1; i++) {
             for (int j = 0; j < this.emptyTiles[i].length - 1; j++) {
-                // if the orientation of the tile is horizontal, the the square my be valid
-                if (aztecDiamond.getOrientation(i, j) == Orientation.HORIZONTAL) {
+                // if the orientation of the tile is vertical, the the square my be valid
+                if (aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
                     this.emptySquares[i][j] = isEmptySquare(i, j);
                 } else {
                     this.emptySquares[i][j] = false;
@@ -109,13 +108,13 @@ public class DominoIteration {
     }
 
     private void generateSquare(int y, int x) {
-        double direction = rand.nextDouble();
-        if (direction <= tilingBias) {
-            generateTileRand(y + 1, x, Orientation.VERTICAL);
-            generateTileRand(y , x + 1, Orientation.VERTICAL);
+        double orientation = rand.nextDouble();
+        if (orientation <= tilingBias) {
+            generateTile(y + 1, x, Direction.DOWN);
+            generateTile(y , x + 1, Direction.UP);
         } else {
-            generateTileRand(y, x, Orientation.HORIZONTAL);
-            generateTileRand(y + 1, x + 1, Orientation.HORIZONTAL);
+            generateTile(y, x, Direction.LEFT);
+            generateTile(y + 1, x + 1, Direction.RIGHT);
         }
     }
 
@@ -124,14 +123,14 @@ public class DominoIteration {
     }
 
     private void generateTileRand(int y, int x, Orientation orientation) {
-        int direction = rand.nextInt(2); //generats either 1 or 0
-        if (orientation == Orientation.VERTICAL) {
+        int direction = rand.nextInt(2); // generates either 1 or 0
+        if (orientation == Orientation.HORIZONTAL) {
             if (direction == 0)
                 this.aztecDiamond.setTile(y, x, new Domino(Direction.UP, false, true));
             else
                 this.aztecDiamond.setTile(y, x, new Domino(Direction.DOWN, false, true));
         }
-        else if (orientation == Orientation.HORIZONTAL) {
+        else if (orientation == Orientation.VERTICAL) {
             if (direction == 0)
                 this.aztecDiamond.setTile(y, x, new Domino(Direction.LEFT, false, true));
             else
@@ -177,22 +176,22 @@ public class DominoIteration {
                 tile = aztecDiamond.getTile(i,j);
                 if(tile != null && tile.isPlaceable()) {
                     neighbors = aztecDiamond.getTileNeighbors(i, j);
-                    if(aztecDiamond.getOrientation(i, j) == Orientation.HORIZONTAL) {
-                        if(tile.direction == Direction.LEFT && neighbors[0][0].direction == Direction.RIGHT) {
+                    if(aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
+                        if(tile.direction == Direction.LEFT && neighbors[0][0] != null && neighbors[0][0].direction == Direction.RIGHT) {
                             aztecDiamond.setTile(i, j, null);
                             aztecDiamond.setTile(i - 1, j - 1, null);
                         } 
-                        else if (tile.direction == Direction.RIGHT && neighbors[2][2].direction == Direction.LEFT) {
+                        else if (tile.direction == Direction.RIGHT && neighbors[2][2] != null && neighbors[2][2].direction == Direction.LEFT) {
                             aztecDiamond.setTile(i, j, null);
                             aztecDiamond.setTile(i + 1, j + 1, null);
                         }
                     } 
                     else {
-                        if(tile.direction == Direction.UP && neighbors[0][2].direction == Direction.DOWN) {
+                        if(tile.direction == Direction.UP && neighbors[0][2] != null && neighbors[0][2].direction == Direction.DOWN) {
                             aztecDiamond.setTile(i, j, null);
                             aztecDiamond.setTile(i - 1, j + 1, null);
                         } 
-                        else if (tile.direction == Direction.DOWN && neighbors[2][0].direction == Direction.UP) {
+                        else if (tile.direction == Direction.DOWN && neighbors[2][0] != null && neighbors[2][0].direction == Direction.UP) {
                             aztecDiamond.setTile(i, j, null);
                             aztecDiamond.setTile(i + 1, j - 1, null);
                         } 
