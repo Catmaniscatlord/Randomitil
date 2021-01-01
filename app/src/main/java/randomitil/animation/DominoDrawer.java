@@ -17,6 +17,9 @@ public class DominoDrawer extends JPanel implements Runnable {
     Thread animator;
     final int FPS = 30;
     final int DELAY = (int)(Math.round(1000 / 30));
+    final int paintOffset = 50;
+    final int paintSize = 200;
+    final int cellSize = 100;
     int frame_num = 0;
 
     int boardSize = -1;
@@ -89,11 +92,23 @@ public class DominoDrawer extends JPanel implements Runnable {
         // Call Super Method
         super.paintComponent(g);
         
-        // Draw grid
-        draw_grid(g, 50, 200);
+        // Setup Drawing
+        Graphics2D g2 = (Graphics2D) g;
+        double scale = ((double) paintSize / boardSize) / (double) cellSize;
 
-        // Test Rectangle
-        draw_dominoes(g, 50, 200);
+        // Draw Bounding Box
+        g.drawRect(paintOffset / 2, paintOffset / 2, paintSize + paintOffset, paintSize + paintOffset);
+
+        // Transform
+        g2.translate((int) Math.round(paintSize / 2) + paintOffset, (int) Math.round(paintSize / 2) + paintOffset);
+        g2.scale(scale, scale);
+
+        // Draw grid
+        draw_grid(g2);
+
+        // Drawing Dominoes
+        g2.translate(0, - (int) Math.round(paintSize * 3 / 4));
+        draw_dominoes(g2);
 
         // Resync drawing
         Toolkit.getDefaultToolkit().sync();
@@ -110,97 +125,67 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Domino Drawing Method ///
-    public void draw_dominoes(Graphics g, int paintOffset, int paintSize) {
+    public void draw_dominoes(Graphics2D g2D) {
         // Setup Variables
-        Graphics2D g2 = (Graphics2D) g;
         Domino dom;
-
-        double ang_offset = 0.0;
-        double[] coords = new double[2];
-        int[] x_coords = new int[4];
-        int[] y_coords = new int[4];
-
-        double cellSize = (double) paintSize / boardSize;
-        double cellDiagonal = Math.sqrt(Math.pow(cellSize, 2) + Math.pow(cellSize, 2)) / 2;
-        double dominoDiagonal =  Math.sqrt(Math.pow(cellSize, 2) + Math.pow(cellSize * 2, 2)) / 2;
-
-        // Transform
-        g2.rotate((Math.PI * 7) / 4);
-        g2.translate(paintOffset + 50 + (int) Math.round(cellSize / 2), paintOffset + 50 + (int) Math.round(cellSize * 3));
+        int[] coords = new int[2];
 
         // Iterate through Diamond Matrix
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
                 // Retrive Domino
                 dom = mainTiles.getTile(i, j);
-                coords[0] = i * cellDiagonal;
-                coords[1] = j * cellDiagonal;
 
+                // Calculate coordinates
+                coords[0] = j * cellSize - i * cellSize;
+                coords[1] = j * cellSize + i * cellSize;
+
+                // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable() == true) {
-                    // change angle based on direction
+                    // Change drawing based on direction
                     switch(dom.getDirection()) {
                         case UP: 
-                            ang_offset = Math.PI * (5.65 / 9);
+                            g2D.setColor(Color.BLUE);
+                            g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             break;
 
                         case DOWN: 
-                            ang_offset = Math.PI * (14.65 / 9);
+                            g2D.setColor(Color.GREEN);
+                            g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             break;
 
                         case RIGHT: 
-                            ang_offset = Math.PI / 8;
+                            g2D.setColor(Color.RED);
+                            g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             break;
 
                         case LEFT: 
-                            ang_offset = (Math.PI * 5) / 8;
+                            g2D.setColor(Color.YELLOW);
+                            g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             break;
                     }
 
-                    // Set Domino Coordinates
-                    x_coords[0] = (int) Math.round(coords[0] + Math.cos(ang_offset) * dominoDiagonal);
-                    y_coords[0] = (int) Math.round(coords[1] + Math.sin(ang_offset) * dominoDiagonal);
-
-                    x_coords[1] = (int) Math.round(coords[0] + Math.cos(ang_offset + Math.PI  / 4) * dominoDiagonal);
-                    y_coords[1] = (int) Math.round(coords[1] + Math.sin(ang_offset + Math.PI / 4) * dominoDiagonal);
-
-                    x_coords[2] = (int) Math.round(coords[0] + Math.cos(ang_offset + Math.PI) * dominoDiagonal);
-                    y_coords[2] = (int) Math.round(coords[1] + Math.sin(ang_offset + Math.PI) * dominoDiagonal);
-
-                    x_coords[3] = (int) Math.round(coords[0] + Math.cos(ang_offset + (Math.PI * 5) / 4) * dominoDiagonal);
-                    y_coords[3] = (int) Math.round(coords[1] + Math.sin(ang_offset + (Math.PI * 5) / 4) * dominoDiagonal);
-
-                    // Draw domino
-                    g2.setColor(new Color(100, 255, 0));
-                    g2.fillPolygon(x_coords, y_coords, 4);
-
-                    g2.setColor(Color.BLACK);
-                    g2.drawPolygon(x_coords, y_coords, 4);
+                    // Draw point for center
+                    g2D.setColor(Color.BLACK);
+                    g2D.drawOval(coords[0] - cellSize / 4, coords[1] - cellSize / 4, cellSize / 2, cellSize / 2);
                 }
-
             }
         }
     }
 
     /// Diamond Grid Method ///
-    public void draw_grid(Graphics g, int paintOffset, int paintSize) {
-        // Calculate
-        int paintCenter = (int) (Math.round(paintSize / 2)) + paintOffset;
-        int cellSize = (int) (Math.round(paintSize / boardSize));
-
-        // Draw Bounding Box
-        g.drawRect(paintOffset - 25, paintOffset - 25, paintSize + 50, paintSize + 50);
-
+    public void draw_grid(Graphics2D g2D) {
         // Draw Diamond
         if (boardSize > 0) {
             for (int i = 0; i < boardSize / 2; i++) {
                 for (int k = 0; k < boardSize / 2 - i; k++) {
                     // Diamond Top
-                    g.drawRect(paintCenter + k * cellSize, paintCenter - (i + 1) * cellSize, cellSize, cellSize);
-                    g.drawRect(paintCenter - (k + 1) * cellSize, paintCenter - (i + 1) * cellSize, cellSize, cellSize);
+                    g2D.drawRect(k * cellSize, -(i + 1) * cellSize, cellSize, cellSize);
+                    g2D.drawRect(-(k + 1) * cellSize, -(i + 1) * cellSize, cellSize, cellSize);
 
                     // Diamond bottom
-                    g.drawRect(paintCenter + k * cellSize, paintCenter + i * cellSize, cellSize,cellSize);
-                    g.drawRect(paintCenter - (k + 1) * cellSize, paintCenter + i * cellSize,cellSize, cellSize);
+                    g2D.drawRect(k * cellSize, i * cellSize, cellSize,cellSize);
+                    g2D.drawRect(-(k + 1) * cellSize, i * cellSize,cellSize, cellSize);
                 }
             }
         }
