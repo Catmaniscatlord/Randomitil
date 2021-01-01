@@ -29,6 +29,6 @@ public class App {
         }
         
         // Update Diamond
-        ui_drawer.updateDiamond(diamond, diamond, diamond.getSize());
+        ui_drawer.updateDiamond(diamond, kevin, diamond.getSize());
     }
 }
