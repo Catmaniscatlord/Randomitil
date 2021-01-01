@@ -145,29 +145,46 @@ public class DominoDrawer extends JPanel implements Runnable {
                     // Change drawing based on direction
                     switch(dom.getDirection()) {
                         case UP: 
+                            // Outline
+                            g2D.setColor(Color.BLACK);
+                            g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+                            
+                            // Fill
                             g2D.setColor(Color.BLUE);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             break;
 
                         case DOWN: 
+                            // Outline
+                            g2D.setColor(Color.BLACK);
+                            g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+                            
+                            // Fill
                             g2D.setColor(Color.GREEN);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             break;
 
                         case RIGHT: 
+                            // Outline
+                            g2D.setColor(Color.BLACK);
+                            g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            
+                            // Fill
                             g2D.setColor(Color.RED);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             break;
 
                         case LEFT: 
+                            // Outline
+                            g2D.setColor(Color.BLACK);
+                            g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            
+                            // Fill
                             g2D.setColor(Color.YELLOW);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             break;
                     }
 
-                    // Draw point for center
-                    g2D.setColor(Color.BLACK);
-                    g2D.drawOval(coords[0] - cellSize / 4, coords[1] - cellSize / 4, cellSize / 2, cellSize / 2);
                 }
             }
         }
