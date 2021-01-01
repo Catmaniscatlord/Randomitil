@@ -13,7 +13,7 @@ public class Domino
     }
 
     public Domino(boolean placeable) {
-        this(Direction.UP,false,false);
+        this(null,false,false);
     }
 
     public Domino(Direction direction, boolean moved, boolean placeable)

@@ -51,7 +51,7 @@ public class AztecDiamond {
         }
     }
 
-    public void expand(int size) {
+    public void expand(int expansionSize) {
 
         /*
          * this will remove all nonplaceable tiles before we expand non-placeable tiles
@@ -60,17 +60,18 @@ public class AztecDiamond {
         if (this.width != this.height) {
             for (int i = 0; i < this.size; i++) {
                 for (int j = 0; j < this.size; j++) {
-                    if (tiles[i][j] != null) {
-                        if (!tiles[i][j].isPlaceable())
+                    if (tiles[i][j] != null && !tiles[i][j].isPlaceable()) {
                             tiles[i][j] = null;
                     }
                 }
             }
         }
-        int newSize = this.size + 2 * size;
-        expandWidth(size, this.size, newSize);
-        expandHeight(size, this.size, newSize);
+        int newSize = this.size + (2 * expansionSize);
+        expandWidth(expansionSize, this.size, newSize);
+        expandHeight(expansionSize, this.size, newSize);
         this.size = newSize;
+        this.width += 2; 
+        this.height += 2;
         chamferTiles();
     }
 
@@ -127,7 +128,7 @@ public class AztecDiamond {
             return 0;
 
         Direction tileDirection = tile.getDirection();
-        if ((x + y) % 2 == 0) {
+        if (getOrientation(y, x) == Orientation.VERTICAL) {
             if (!(tileDirection == Direction.UP || tileDirection == Direction.DOWN)) {
                 return 1;
             }
@@ -153,8 +154,8 @@ public class AztecDiamond {
                 neighborY = y + i - 1;
                 neighborX = x + j - 1;
                 if (neighborX >= 0 && neighborY >= 0 && neighborX < this.size && neighborY < this.size) {
-                    if (((x + y) % 2 == 0 && ((i == 0 && j == 0) || (i == 2 && j == 2)))
-                            || ((x + y) % 2 == 1 && ((i == 2 && j == 0) || (i == 0 && j == 2)))) {
+                    if ((getOrientation(y, x) == Orientation.HORIZONTAL && ((i == 0 && j == 0) || (i == 2 && j == 2)))
+                        || (getOrientation(y, x) == Orientation.VERTICAL && ((i == 2 && j == 0) || (i == 0 && j == 2)))) {
                         neighbors[i][j] = new Domino(false);
                     } else
                         neighbors[i][j] = getTile(neighborY, neighborX);
@@ -169,13 +170,10 @@ public class AztecDiamond {
 
     public boolean tileHasNeighbors(int y, int x) {
         Set<Domino> neighbors = new HashSet<Domino>();
-        Domino[][] tileNeighbors = getTileNeighbors(x, y);
+        Domino[][] tileNeighbors = getTileNeighbors(y, x);
         for (int i = 0; i < tileNeighbors.length; i++) {
             for (int j = 0; j < tileNeighbors[i].length; j++) {
-                if (!(((x + y) % 2 == 0 && ((i == 0 && j == 0) || (i == 2 && j == 2)))
-                        || ((x + y) % 2 == 1 && ((i == 2 && j == 0) || (i == 0 && j == 2))))) {
-                    neighbors.add(tileNeighbors[i][j]);
-                }
+                neighbors.add(tileNeighbors[i][j]);
             }
         }
         /*
@@ -185,9 +183,8 @@ public class AztecDiamond {
          */
         if (neighbors.size() != 1) {
             for (Domino d : neighbors) {
-                if(d != null) {
-                    if (d.isPlaceable())
-                        return true;
+                if(d != null && d.isPlaceable()) {
+                    return true;
                 }
             }
         }
@@ -196,15 +193,21 @@ public class AztecDiamond {
 
     public Boolean isEmpty() {
         Boolean isEmpty = true;
-        for (int i = 0; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
-                if (getTile(i, j) != null) {
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                if (getTile(i, j) != null && getTile(i, j).isPlaceable()) {
                     isEmpty = false;
-                    return isEmpty;
+                    return isEmpty;                        
                 }
             }
         }
         return isEmpty;
+    }
+
+    public Orientation getOrientation(int y, int x) {
+        if ((y+x) % 2 == (this.height <= this.width ? 0 : 1))
+            return Orientation.HORIZONTAL;
+        return Orientation.VERTICAL;
     }
 
     public void setTile(int y, int x, Domino domino) {
