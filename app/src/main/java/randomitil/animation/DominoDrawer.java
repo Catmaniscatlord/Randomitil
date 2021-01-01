@@ -18,13 +18,14 @@ public class DominoDrawer extends JPanel implements Runnable {
     final int FPS = 30;
     final int DELAY = (int)(Math.round(1000 / 30));
     final int paintOffset = 50;
-    final int paintSize = 200;
-    final int cellSize = 100;
+    final int paintSize = 400;
+    final int cellSize = 200;
     int frame_num = 0;
 
     int boardSize = -1;
     AztecDiamond mainTiles;
     AztecDiamond nextTiles;
+    DominoIteration calc;
 
     /// Constructor ///
     public DominoDrawer() {
@@ -35,10 +36,20 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Update Diamond ///
-    public void updateDiamond(AztecDiamond oldTiles, AztecDiamond nextTiles, int newSize) {
-        // Update diamond and variables
-        this.mainTiles = oldTiles;
-        this.nextTiles = nextTiles;
+    public void updateDiamond(AztecDiamond nextTiles, DominoIteration calc, int newSize) {
+        // Update diamond
+        if (boardSize != -1) {
+            this.mainTiles = this.nextTiles;
+            this.nextTiles = nextTiles;
+        } else {
+            this.mainTiles = nextTiles;
+            this.nextTiles = null;
+        }
+        
+        // Update DominoIteration Object
+        this.calc = calc;
+
+        // Update Size
         this.boardSize = newSize;
     }
 
@@ -54,7 +65,9 @@ public class DominoDrawer extends JPanel implements Runnable {
             nextFrame();
 
             // Repaint
-            repaint();
+            if (boardSize != -1) {
+                repaint();
+            }
 
             // Calculate System time
             timeDiff = System.currentTimeMillis() - beforeTime;
@@ -94,7 +107,7 @@ public class DominoDrawer extends JPanel implements Runnable {
         
         // Setup Drawing
         Graphics2D g2 = (Graphics2D) g;
-        double scale = ((double) paintSize / boardSize) / (double) cellSize;
+        double scale = ((double) paintSize / boardSize) / cellSize;
 
         // Draw Bounding Box
         g.drawRect(paintOffset / 2, paintOffset / 2, paintSize + paintOffset, paintSize + paintOffset);
@@ -104,11 +117,11 @@ public class DominoDrawer extends JPanel implements Runnable {
         g2.scale(scale, scale);
 
         // Draw grid
-        draw_grid(g2);
+        draw_grid(g2, scale);
 
         // Drawing Dominoes
-        g2.translate(0, - (int) Math.round(paintSize * 3 / 4));
-        draw_dominoes(g2);
+        g2.translate(0, (int) -Math.round(paintSize / 2 + cellSize * scale));
+        draw_dominoes(g2, scale);
 
         // Resync drawing
         Toolkit.getDefaultToolkit().sync();
@@ -125,7 +138,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Domino Drawing Method ///
-    public void draw_dominoes(Graphics2D g2D) {
+    public void draw_dominoes(Graphics2D g2D, double scale) {
         // Setup Variables
         Domino dom;
         int[] coords = new int[2];
@@ -137,61 +150,66 @@ public class DominoDrawer extends JPanel implements Runnable {
                 dom = mainTiles.getTile(i, j);
 
                 // Calculate coordinates
-                coords[0] = j * cellSize - i * cellSize;
-                coords[1] = j * cellSize + i * cellSize;
+                int cellStep = (int) Math.round(cellSize / 2);
+                coords[0] = j * cellStep - i * cellStep;
+                coords[1] = j * cellStep + i * cellStep;
 
                 // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable() == true) {
                     // Change drawing based on direction
                     switch(dom.getDirection()) {
                         case UP: 
-                            // Outline
-                            g2D.setColor(Color.BLACK);
-                            g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            
                             // Fill
                             g2D.setColor(Color.BLUE);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            break;
-
-                        case DOWN: 
+                            
                             // Outline
                             g2D.setColor(Color.BLACK);
                             g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            
+                            break;
+
+                        case DOWN: 
                             // Fill
                             g2D.setColor(Color.GREEN);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+                            
+                            // Outline
+                            g2D.setColor(Color.BLACK);
+                            g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             break;
 
                         case RIGHT: 
-                            // Outline
-                            g2D.setColor(Color.BLACK);
-                            g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-                            
                             // Fill
                             g2D.setColor(Color.RED);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-                            break;
-
-                        case LEFT: 
+                            
                             // Outline
                             g2D.setColor(Color.BLACK);
                             g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-                            
+                            break;
+
+                        case LEFT: 
                             // Fill
                             g2D.setColor(Color.YELLOW);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            
+                            // Outline
+                            g2D.setColor(Color.BLACK);
+                            g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             break;
                     }
 
                 }
+
+                // Draw Point
+                g2D.setColor(Color.BLACK);
+                g2D.drawOval(coords[0] - cellSize / 8, coords[1] - cellSize / 8, cellSize / 4, cellSize / 4);
             }
         }
     }
 
     /// Diamond Grid Method ///
-    public void draw_grid(Graphics2D g2D) {
+    public void draw_grid(Graphics2D g2D, double scale) {
         // Draw Diamond
         if (boardSize > 0) {
             for (int i = 0; i < boardSize / 2; i++) {
