@@ -205,7 +205,7 @@ public class AztecDiamond {
     }
 
     public Orientation getOrientation(int y, int x) {
-        if ((y + x) % 2 == (this.height <= this.width ? 1 : 0))
+        if ((y + x) % 2 == (this.width < this.height ? 0 : 1))
             return Orientation.HORIZONTAL;
         return Orientation.VERTICAL;
     }
@@ -241,7 +241,6 @@ public class AztecDiamond {
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        buf.append("[\n");
         for (int i = 0; i < this.size; i++) {
             buf.append('[');
             for (int j = 0; j < this.size; j++) {
@@ -249,14 +248,13 @@ public class AztecDiamond {
                 if (tile != null) {
                     buf.append(tile.toString());
                 } else {
-                    buf.append("null");
+                    buf.append("____");
                 }
                 if (j != this.size - 1)
                     buf.append(",");
             }
             buf.append("]\n");
         }
-        buf.append(']');
         return buf.toString();
     }
 }
