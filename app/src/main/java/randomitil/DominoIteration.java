@@ -6,8 +6,11 @@ import java.util.Random;
 public class DominoIteration {
 
     private AztecDiamond aztecDiamond;
+    private AztecDiamond removedTiles;
+    private AztecDiamond generatedTiles;
     private boolean[][] emptyTiles;
     private boolean[][] emptySquares;
+    private boolean animationMode = false;
 
     double tilingBias;
 
@@ -33,10 +36,22 @@ public class DominoIteration {
     
     public void fillEmptyTiles() {
         findEmptyTiles();
+        if(this.animationMode) {
+            if(this.generatedTiles == null) {
+                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+            }
+            if(this.generatedTiles.getSize() != this.aztecDiamond.getSize()) {
+                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+            }
+        }   
         for (int i = 0; i < this.emptyTiles.length; i++) {
             for (int j = 0; j < this.emptyTiles[i].length; j++) {
                 if(this.emptyTiles[i][j]) {
                     generateTileRand(i, j, this.aztecDiamond.getOrientation(i, j));
+                     
+                    if(this.animationMode) {
+                        this.generatedTiles.setTile(i, j,  this.aztecDiamond.getTile(i, j));
+                    }
                 }
             }
         }
@@ -86,21 +101,37 @@ public class DominoIteration {
     // might change this algorithm later
     public void fillEmptySquares() {
         findEmptySquares();
-        int neighborX;
-        int neighborY;
-        //I am well aware this is illegal, but I have no ther choice (4 nested 4 loops)
+        if(this.animationMode) {
+            if(this.generatedTiles == null) {
+                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+            }
+            if(this.generatedTiles.getSize() != this.aztecDiamond.getSize()) {
+                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+            }
+        }
+
+        System.out.println("empty squares");
+        System.out.println(emptySquaresString());
+
+        int[] neighborX = {0,1,2,1,0,-1,-2,-1,0};
+        int[] neighborY = {-2,-1,0,1,2,1,0,-1,0};
+        /* these arrays will access the neighbors in the following order
+         * [*,*,1,*,*]
+         * [*,8,*,2,*]
+         * [7,*,9,*,3]
+         * [*,6,*,4,*]
+         * [*,*,5,*,*]
+        */
+
         for (int i = 0; i < this.emptySquares.length; i++) {
             for (int j = 0; j < this.emptySquares[i].length; j++) {
                 if(this.emptySquares[i][j]) {
                     generateSquare(i, j);
-                    for (int k = 0; k < 3; k++) {
-                        for (int l = 0; l < 3; l++) {
-                            neighborY = k + i - 1;
-                            neighborX = l + j - 1;
-                            if (neighborX >= 0 && neighborY >= 0 && neighborX < this.emptySquares.length && neighborY < this.emptySquares.length) {
-                                this.emptySquares[neighborY][neighborX] = false;
-                            }  
-                        }
+                    for (int k = 0; k < neighborX.length; k++) {
+                        if (neighborX[k] + j >= 0 && neighborY[k] + i >= 0 && 
+                            neighborX[k] + j < this.emptySquares.length && neighborY[k] + i < this.emptySquares.length) {
+                            this.emptySquares[neighborY[k] + i][neighborX[k] + j] = false;
+                        }  
                     }
                 }
             }
@@ -111,7 +142,7 @@ public class DominoIteration {
         double orientation = rand.nextDouble();
         if (orientation <= tilingBias) {
             generateTile(y + 1, x, Direction.DOWN);
-            generateTile(y , x + 1, Direction.UP);
+            generateTile(y , x + 1, Direction.UP);          
         } else {
             generateTile(y, x, Direction.LEFT);
             generateTile(y + 1, x + 1, Direction.RIGHT);
@@ -120,6 +151,9 @@ public class DominoIteration {
 
     private void generateTile(int y, int x, Direction direction) {
         this.aztecDiamond.setTile(y, x, new Domino(direction, false, true));
+        if(animationMode) {
+            this.generatedTiles.setTile(y, x,  new Domino(direction, false, true));
+        }
     }
 
     private void generateTileRand(int y, int x, Orientation orientation) {
@@ -164,36 +198,60 @@ public class DominoIteration {
                 }
             }
         }
-
         this.aztecDiamond = newDiamond;
     }
 
     private void removeOpposingTiles () {
         Domino tile;
         Domino[][] neighbors;
+         
+        if (this.animationMode) {
+            removedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+        }
+
         for (int i = 0; i < this.aztecDiamond.getSize(); i++) {
             for (int j = 0; j < this.aztecDiamond.getSize(); j++) {
-                tile = aztecDiamond.getTile(i,j);
+                tile = this.aztecDiamond.getTile(i,j);
                 if(tile != null && tile.isPlaceable()) {
-                    neighbors = aztecDiamond.getTileNeighbors(i, j);
-                    if(aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
+                    neighbors = this.aztecDiamond.getTileNeighbors(i, j);
+                    if(this.aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
                         if(tile.direction == Direction.LEFT && neighbors[0][0] != null && neighbors[0][0].direction == Direction.RIGHT) {
-                            aztecDiamond.setTile(i, j, null);
-                            aztecDiamond.setTile(i - 1, j - 1, null);
+                            this.aztecDiamond.setTile(i, j, null);
+                            this.aztecDiamond.setTile(i - 1, j - 1, null);
+                             
+                            if (this.animationMode) {
+                                this.removedTiles.setTile(i, j, tile);
+                                this.removedTiles.setTile(i - 1, j - 1, neighbors[0][0]);
+                            }
                         } 
                         else if (tile.direction == Direction.RIGHT && neighbors[2][2] != null && neighbors[2][2].direction == Direction.LEFT) {
-                            aztecDiamond.setTile(i, j, null);
-                            aztecDiamond.setTile(i + 1, j + 1, null);
+                            this.aztecDiamond.setTile(i, j, null);
+                            this.aztecDiamond.setTile(i + 1, j + 1, null);
+                             
+                            if (this.animationMode) {        
+                                this.removedTiles.setTile(i, j, tile);
+                                this.removedTiles.setTile(i + 1, j + 1, neighbors[2][2]);
+                            }
                         }
-                    } 
+                    }
                     else {
                         if(tile.direction == Direction.UP && neighbors[0][2] != null && neighbors[0][2].direction == Direction.DOWN) {
-                            aztecDiamond.setTile(i, j, null);
-                            aztecDiamond.setTile(i - 1, j + 1, null);
+                            this.aztecDiamond.setTile(i, j, null);
+                            this.aztecDiamond.setTile(i - 1, j + 1, null);
+                             
+                            if (this.animationMode) {
+                                this.removedTiles.setTile(i, j, tile);
+                                this.removedTiles.setTile(i - 1, j + 1, neighbors[0][2]);
+                            }
                         } 
                         else if (tile.direction == Direction.DOWN && neighbors[2][0] != null && neighbors[2][0].direction == Direction.UP) {
-                            aztecDiamond.setTile(i, j, null);
-                            aztecDiamond.setTile(i + 1, j - 1, null);
+                            this.aztecDiamond.setTile(i, j, null);
+                            this.aztecDiamond.setTile(i + 1, j - 1, null);
+                             
+                            if (this.animationMode) {
+                                this.removedTiles.setTile(i, j, tile);
+                                this.removedTiles.setTile(i + 1, j - 1, neighbors[2][0]);
+                            }
                         } 
                     }
                 }
@@ -201,6 +259,37 @@ public class DominoIteration {
         }
     }
 
+    public String emptyTilesString() {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < this.emptyTiles.length; i++) {
+            buf.append('[');
+            for (int j = 0; j < this.emptyTiles[i].length; j++) {
+                buf.append(this.emptyTiles[i][j]);
+                if (j != this.emptyTiles[i].length - 1)
+                    buf.append(",");
+            }
+            buf.append("]\n");
+        }
+        return buf.toString();
+    }
+
+    
+    public String emptySquaresString() {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < this.emptySquares.length; i++) {
+            buf.append('[');
+            for (int j = 0; j < this.emptySquares[i].length; j++) {
+                if(this.emptySquares[i][j])
+                    buf.append("*");
+                else
+                    buf.append("_");
+                if (j != this.emptySquares[i].length - 1)
+                    buf.append(",");
+            }
+            buf.append("]\n");
+        }
+        return buf.toString();
+    }
 
     public void setTilingBias(double tilingBias) {
         if (tilingBias > 1)
@@ -222,8 +311,24 @@ public class DominoIteration {
     public boolean[][] getEmptyTiles() {
         return emptyTiles;
     }
+    
+    public void setanimationMode(boolean animationMode) {
+        this.animationMode = animationMode;
+    }
+    
+    public boolean isanimationMode() {
+        return animationMode;
+    }
 
     public AztecDiamond getAztecDiamond() {
         return aztecDiamond;
+    }
+
+    public AztecDiamond getRemovedTiles() {
+        return removedTiles;
+    }
+
+    public AztecDiamond getGeneratedTiles() {
+        return generatedTiles;
     }
 }
