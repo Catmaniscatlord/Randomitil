@@ -120,7 +120,7 @@ public class DominoDrawer extends JPanel implements Runnable {
         draw_grid(g2, scale);
 
         // Drawing Dominoes
-        g2.translate(0, (int) -Math.round(paintSize / 2 + cellSize * scale));
+        g2.translate((int) -Math.round((cellSize * (boardSize / 2.0 - 0.5))), 0);
         draw_dominoes(g2, scale);
 
         // Resync drawing
@@ -151,8 +151,8 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                 // Calculate coordinates
                 int cellStep = (int) Math.round(cellSize / 2);
-                coords[0] = j * cellStep - i * cellStep;
-                coords[1] = j * cellStep + i * cellStep;
+                coords[0] = j * cellStep + i * cellStep;
+                coords[1] = j * cellStep - i * cellStep;
 
                 // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable() == true) {
