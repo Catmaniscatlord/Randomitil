@@ -110,9 +110,6 @@ public class DominoIteration {
             }
         }
 
-        System.out.println("empty squares");
-        System.out.println(emptySquaresString());
-
         int[] neighborX = {0,1,2,1,0,-1,-2,-1,0};
         int[] neighborY = {-2,-1,0,1,2,1,0,-1,0};
         /* these arrays will access the neighbors in the following order
