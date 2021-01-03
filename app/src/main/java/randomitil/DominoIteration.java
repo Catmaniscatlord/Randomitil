@@ -33,29 +33,6 @@ public class DominoIteration {
             }
         }
     }
-    
-    public void fillEmptyTiles() {
-        findEmptyTiles();
-        if(this.animationMode) {
-            if(this.generatedTiles == null) {
-                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
-            }
-            if(this.generatedTiles.getSize() != this.aztecDiamond.getSize()) {
-                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
-            }
-        }   
-        for (int i = 0; i < this.emptyTiles.length; i++) {
-            for (int j = 0; j < this.emptyTiles[i].length; j++) {
-                if(this.emptyTiles[i][j]) {
-                    generateTileRand(i, j, this.aztecDiamond.getOrientation(i, j));
-                     
-                    if(this.animationMode) {
-                        this.generatedTiles.setTile(i, j,  this.aztecDiamond.getTile(i, j));
-                    }
-                }
-            }
-        }
-    }
 
     /*
      * This function checks the tiles around the given cooridnates int he folloing
@@ -150,22 +127,6 @@ public class DominoIteration {
         this.aztecDiamond.setTile(y, x, new Domino(direction, true));
         if(animationMode) {
             this.generatedTiles.setTile(y, x,  new Domino(direction, true));
-        }
-    }
-
-    private void generateTileRand(int y, int x, Orientation orientation) {
-        int direction = rand.nextInt(2); // generates either 1 or 0
-        if (orientation == Orientation.HORIZONTAL) {
-            if (direction == 0)
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.UP, true));
-            else
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.DOWN, true));
-        }
-        else if (orientation == Orientation.VERTICAL) {
-            if (direction == 0)
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.LEFT, true));
-            else
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.RIGHT, true));
         }
     }
 
