@@ -22,3 +22,9 @@ application {
     // Define the main class for the application.
     mainClass = 'randomitil.App'
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'randomitil.App'
+    }   
+}
