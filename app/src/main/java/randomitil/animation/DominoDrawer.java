@@ -24,7 +24,6 @@ public class DominoDrawer extends JPanel implements Runnable {
 
     int boardSize = -1;
     AztecDiamond mainTiles;
-    AztecDiamond nextTiles;
     DominoIteration calc;
 
     /// Constructor ///
@@ -36,17 +35,11 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Update Diamond ///
-    public void updateDiamond(AztecDiamond nextTiles, DominoIteration calc, int newSize) {
+    public void updateDiamond(AztecDiamond mainTiles, DominoIteration calc, int newSize) {
         // Update diamond
-        if (boardSize != -1) {
-            this.mainTiles = this.nextTiles;
-            this.nextTiles = nextTiles;
-        } else {
-            this.mainTiles = nextTiles;
-            this.nextTiles = null;
-        }
-        
-        // Update DominoIteration Object
+        this.mainTiles = mainTiles;
+
+        // Update domino iteration calculater
         this.calc = calc;
 
         // Update Size
@@ -117,11 +110,11 @@ public class DominoDrawer extends JPanel implements Runnable {
         g2.scale(scale, scale);
 
         // Draw grid
-        draw_grid(g2, scale);
+        //draw_grid(g2);
 
         // Drawing Dominoes
         g2.translate((int) -Math.round((cellSize * (boardSize / 2.0 - 0.5))), 0);
-        draw_dominoes(g2, scale);
+        draw_dominoes(g2);
 
         // Resync drawing
         Toolkit.getDefaultToolkit().sync();
@@ -138,9 +131,9 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Domino Drawing Method ///
-    public void draw_dominoes(Graphics2D g2D, double scale) {
+    public void draw_dominoes(Graphics2D g2D) {
         // Setup Variables
-        Domino dom;
+        Domino dom = null;
         int[] coords = new int[2];
 
         // Iterate through Diamond Matrix
@@ -151,11 +144,11 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                 // Calculate coordinates
                 int cellStep = (int) Math.round(cellSize / 2);
-                coords[0] = j * cellStep + i * cellStep;
-                coords[1] = j * cellStep - i * cellStep;
+                coords[0] = i * cellStep + j * cellStep;
+                coords[1] =  j * cellStep - i * cellStep;
 
                 // Draw Placeable Dominoes
-                if (dom != null && dom.isPlaceable() == true) {
+                if (dom != null && dom.isPlaceable()) {
                     // Change drawing based on direction
                     switch(dom.getDirection()) {
                         case UP: 
@@ -163,6 +156,12 @@ public class DominoDrawer extends JPanel implements Runnable {
                             g2D.setColor(Color.BLUE);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             
+                            // Black Arrow
+                            g2D.setColor(Color.BLACK);
+                            int[] uxCoords = {coords[0] - cellSize / 2, coords[0] + cellSize / 2, coords[0]};
+                            int[] uyCoords = {coords[1] + cellSize / 4, coords[1] + cellSize / 4, coords[1] - cellSize / 4};
+                            g2D.fillPolygon(uxCoords, uyCoords, 3);
+
                             // Outline
                             g2D.setColor(Color.BLACK);
                             g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
@@ -172,6 +171,12 @@ public class DominoDrawer extends JPanel implements Runnable {
                             // Fill
                             g2D.setColor(Color.GREEN);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+
+                            // Black Arrow
+                            g2D.setColor(Color.BLACK);
+                            int[] dxCoords = {coords[0] - cellSize / 2, coords[0] + cellSize / 2, coords[0]};
+                            int[] dyCoords = {coords[1] - cellSize / 4, coords[1] - cellSize / 4, coords[1] + cellSize / 4};
+                            g2D.fillPolygon(dxCoords, dyCoords, 3);
                             
                             // Outline
                             g2D.setColor(Color.BLACK);
@@ -182,6 +187,12 @@ public class DominoDrawer extends JPanel implements Runnable {
                             // Fill
                             g2D.setColor(Color.RED);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+
+                            // Black Arrow
+                            g2D.setColor(Color.BLACK);
+                            int[] rxCoords = {coords[0] - cellSize / 4, coords[0] - cellSize / 4, coords[0] + cellSize / 4};
+                            int[] ryCoords = {coords[1] - cellSize / 2, coords[1] + cellSize / 2, coords[1]};
+                            g2D.fillPolygon(rxCoords, ryCoords, 3);
                             
                             // Outline
                             g2D.setColor(Color.BLACK);
@@ -192,6 +203,12 @@ public class DominoDrawer extends JPanel implements Runnable {
                             // Fill
                             g2D.setColor(Color.YELLOW);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+
+                            // Black Arrow
+                            g2D.setColor(Color.BLACK);
+                            int[] lxCoords = {coords[0] + cellSize / 4, coords[0] + cellSize / 4, coords[0] - cellSize / 4};
+                            int[] lyCoords = {coords[1] - cellSize / 2, coords[1] + cellSize / 2, coords[1]};
+                            g2D.fillPolygon(lxCoords, lyCoords, 3);
                             
                             // Outline
                             g2D.setColor(Color.BLACK);
@@ -202,14 +219,19 @@ public class DominoDrawer extends JPanel implements Runnable {
                 }
 
                 // Draw Point
-                g2D.setColor(Color.BLACK);
-                g2D.drawOval(coords[0] - cellSize / 8, coords[1] - cellSize / 8, cellSize / 4, cellSize / 4);
+                if (dom == null) {
+                    g2D.setColor(Color.BLUE);
+                    g2D.drawOval(coords[0] - cellSize / 8, coords[1] - cellSize / 8, cellSize / 4, cellSize / 4);
+                } else if (!dom.isPlaceable()) {
+                    g2D.setColor(Color.RED);
+                    g2D.drawOval(coords[0] - cellSize / 8, coords[1] - cellSize / 8, cellSize / 4, cellSize / 4);
+                }
             }
         }
     }
 
     /// Diamond Grid Method ///
-    public void draw_grid(Graphics2D g2D, double scale) {
+    public void draw_grid(Graphics2D g2D) {
         // Draw Diamond
         if (boardSize > 0) {
             for (int i = 0; i < boardSize / 2; i++) {
