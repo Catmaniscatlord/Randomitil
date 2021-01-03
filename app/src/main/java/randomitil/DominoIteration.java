@@ -147,9 +147,9 @@ public class DominoIteration {
     }
 
     private void generateTile(int y, int x, Direction direction) {
-        this.aztecDiamond.setTile(y, x, new Domino(direction, false, true));
+        this.aztecDiamond.setTile(y, x, new Domino(direction, true));
         if(animationMode) {
-            this.generatedTiles.setTile(y, x,  new Domino(direction, false, true));
+            this.generatedTiles.setTile(y, x,  new Domino(direction, true));
         }
     }
 
@@ -157,15 +157,15 @@ public class DominoIteration {
         int direction = rand.nextInt(2); // generates either 1 or 0
         if (orientation == Orientation.HORIZONTAL) {
             if (direction == 0)
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.UP, false, true));
+                this.aztecDiamond.setTile(y, x, new Domino(Direction.UP, true));
             else
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.DOWN, false, true));
+                this.aztecDiamond.setTile(y, x, new Domino(Direction.DOWN, true));
         }
         else if (orientation == Orientation.VERTICAL) {
             if (direction == 0)
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.LEFT, false, true));
+                this.aztecDiamond.setTile(y, x, new Domino(Direction.LEFT, true));
             else
-                this.aztecDiamond.setTile(y, x, new Domino(Direction.RIGHT, false, true));
+                this.aztecDiamond.setTile(y, x, new Domino(Direction.RIGHT, true));
         }
     }
 

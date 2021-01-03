@@ -20,12 +20,12 @@ public class App {
         System.out.println("new tiles");
         System.out.println(kevin.getAztecDiamond());
     
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 500; i++) {
             kevin.moveDominos(1);
             kevin.fillEmptySquares();
             kevin.fillEmptyTiles();
-            System.out.println("new tiles");
-            System.out.println(kevin.getAztecDiamond());
+            //System.out.println("new tiles");
+           // System.out.println(kevin.getAztecDiamond());
             if (!kevin.getAztecDiamond().checkTiles().isEmpty()) {
                 System.out.println("oh booty cheeks");
             }

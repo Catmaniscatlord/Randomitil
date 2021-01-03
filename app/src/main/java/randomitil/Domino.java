@@ -4,22 +4,20 @@ package randomitil;
 public class Domino
 {    
     Direction direction;
-    boolean moved;
     boolean placeable;
 
     public Domino()
     {
-        this(Direction.UP,false,true);
+        this(null,true);
     }
 
     public Domino(boolean placeable) {
-        this(null,false,false);
+        this(null,false);
     }
 
-    public Domino(Direction direction, boolean moved, boolean placeable)
+    public Domino(Direction direction, boolean placeable)
     {
         this.direction = direction;
-        this.moved = moved;
         this.placeable = placeable;
     }
 
@@ -29,14 +27,6 @@ public class Domino
 
     public void setDirection(Direction direction) {
         this.direction = direction;
-    }
-
-    public boolean isMoved() {
-        return moved;
-    }
-
-    public void setMoved(boolean moved) {
-        this.moved = moved;
     }
 
     public boolean isPlaceable() {
