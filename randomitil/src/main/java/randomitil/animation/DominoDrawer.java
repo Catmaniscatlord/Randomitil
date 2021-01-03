@@ -16,11 +16,15 @@ public class DominoDrawer extends JPanel implements Runnable {
     // Global Variables
     Thread animator;
     final int FPS = 30;
-    final int DELAY = (int)(Math.round(1000 / 30));
+    final int DELAY = (int) Math.round(1000 / FPS);
     final int paintOffset = 50;
     final int paintSize = 400;
     final int cellSize = 200;
-    int frame_num = 0;
+    int frameNum = 0;
+
+    double colorPhase = 0;
+    int colorIndex = 0;
+    Color[] dirColors = new Color[4];
 
     int boardSize = -1;
     AztecDiamond mainTiles;
@@ -32,6 +36,11 @@ public class DominoDrawer extends JPanel implements Runnable {
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(500, 500));
 
+        // Set Color Coding
+        dirColors[0] = new Color(0, 0, 255);   // UP Color
+        dirColors[1] = new Color(255, 0, 0);   // RIGHT Color
+        dirColors[2] = new Color(255, 255, 0);   // DOWN Color
+        dirColors[3] = new Color(0, 255, 0); // LEFT Color
     }
 
     /// Update Diamond ///
@@ -114,7 +123,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
         // Drawing Dominoes
         g2.translate((int) -Math.round((cellSize * (boardSize / 2.0 - 0.5))), 0);
-        draw_dominoes(g2);
+        draw_dominoes(g2, scale);
 
         // Resync drawing
         Toolkit.getDefaultToolkit().sync();
@@ -123,15 +132,26 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Update Method ///
     public void nextFrame() {
         // Change Frame
-        if (frame_num < FPS) {
-            frame_num++;
+        if (frameNum < FPS) {
+            frameNum++;
         } else {
-            frame_num = 0;
+            frameNum = 0;
+        }
+
+        // Change Color Phase
+        if (colorPhase + 1 < FPS) {
+            colorPhase += 1;
+        } else {
+            colorPhase = 0;
+            colorIndex++;
+            if (colorIndex >= 4) {
+                colorIndex = 0;
+            }
         }
     }
 
     /// Domino Drawing Method ///
-    public void draw_dominoes(Graphics2D g2D) {
+    public void draw_dominoes(Graphics2D g2D, double scale) {
         // Setup Variables
         Domino dom = null;
         int[] coords = new int[2];
@@ -153,81 +173,106 @@ public class DominoDrawer extends JPanel implements Runnable {
                     switch(dom.getDirection()) {
                         case UP: 
                             // Fill
-                            g2D.setColor(Color.BLUE);
+                            g2D.setColor(getPhaseColor(0));
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             
-                            // Black Arrow
-                            g2D.setColor(Color.BLACK);
-                            int[] uxCoords = {coords[0] - cellSize / 2, coords[0] + cellSize / 2, coords[0]};
-                            int[] uyCoords = {coords[1] + cellSize / 4, coords[1] + cellSize / 4, coords[1] - cellSize / 4};
-                            g2D.fillPolygon(uxCoords, uyCoords, 3);
+                            if (scale >= 0.125) {
+                                // Black Arrow
+                                g2D.setColor(Color.BLACK);
+                                int[] uxCoords = {coords[0] - cellSize / 2, coords[0] + cellSize / 2, coords[0]};
+                                int[] uyCoords = {coords[1] + cellSize / 4, coords[1] + cellSize / 4, coords[1] - cellSize / 4};
+                                g2D.fillPolygon(uxCoords, uyCoords, 3);
 
-                            // Outline
-                            g2D.setColor(Color.BLACK);
-                            g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            break;
-
-                        case DOWN: 
-                            // Fill
-                            g2D.setColor(Color.GREEN);
-                            g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-
-                            // Black Arrow
-                            g2D.setColor(Color.BLACK);
-                            int[] dxCoords = {coords[0] - cellSize / 2, coords[0] + cellSize / 2, coords[0]};
-                            int[] dyCoords = {coords[1] - cellSize / 4, coords[1] - cellSize / 4, coords[1] + cellSize / 4};
-                            g2D.fillPolygon(dxCoords, dyCoords, 3);
-                            
-                            // Outline
-                            g2D.setColor(Color.BLACK);
-                            g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+                                // Outline
+                                g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+                            }
                             break;
 
                         case RIGHT: 
                             // Fill
-                            g2D.setColor(Color.RED);
+                            g2D.setColor(getPhaseColor(1));
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
 
-                            // Black Arrow
-                            g2D.setColor(Color.BLACK);
-                            int[] rxCoords = {coords[0] - cellSize / 4, coords[0] - cellSize / 4, coords[0] + cellSize / 4};
-                            int[] ryCoords = {coords[1] - cellSize / 2, coords[1] + cellSize / 2, coords[1]};
-                            g2D.fillPolygon(rxCoords, ryCoords, 3);
-                            
-                            // Outline
-                            g2D.setColor(Color.BLACK);
-                            g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            if (scale >= 0.125) {
+                                // Black Arrow
+                                g2D.setColor(Color.BLACK);
+                                int[] rxCoords = {coords[0] - cellSize / 4, coords[0] - cellSize / 4, coords[0] + cellSize / 4};
+                                int[] ryCoords = {coords[1] - cellSize / 2, coords[1] + cellSize / 2, coords[1]};
+                                g2D.fillPolygon(rxCoords, ryCoords, 3);
+                                
+                                // Outline
+                                g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            }
+                            break;
+
+                        case DOWN: 
+                            // Fill
+                            g2D.setColor(getPhaseColor(2));
+                            g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+
+                            if (scale >= 0.125) {
+                                // Black Arrow
+                                g2D.setColor(Color.BLACK);
+                                int[] dxCoords = {coords[0] - cellSize / 2, coords[0] + cellSize / 2, coords[0]};
+                                int[] dyCoords = {coords[1] - cellSize / 4, coords[1] - cellSize / 4, coords[1] + cellSize / 4};
+                                g2D.fillPolygon(dxCoords, dyCoords, 3);
+                                
+                                // Outline
+                                g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
+                            }
                             break;
 
                         case LEFT: 
                             // Fill
-                            g2D.setColor(Color.YELLOW);
+                            g2D.setColor(getPhaseColor(3));
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
 
-                            // Black Arrow
-                            g2D.setColor(Color.BLACK);
-                            int[] lxCoords = {coords[0] + cellSize / 4, coords[0] + cellSize / 4, coords[0] - cellSize / 4};
-                            int[] lyCoords = {coords[1] - cellSize / 2, coords[1] + cellSize / 2, coords[1]};
-                            g2D.fillPolygon(lxCoords, lyCoords, 3);
-                            
-                            // Outline
-                            g2D.setColor(Color.BLACK);
-                            g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            if (scale >= 0.125) {
+                                // Black Arrow
+                                g2D.setColor(Color.BLACK);
+                                int[] lxCoords = {coords[0] + cellSize / 4, coords[0] + cellSize / 4, coords[0] - cellSize / 4};
+                                int[] lyCoords = {coords[1] - cellSize / 2, coords[1] + cellSize / 2, coords[1]};
+                                g2D.fillPolygon(lxCoords, lyCoords, 3);
+                                
+                                // Outline
+                                g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
+                            }
                             break;
                     }
 
                 }
 
                 // Draw Point
-                if (dom == null) {
+                /*if (dom == null) {
                     g2D.setColor(Color.BLUE);
                     g2D.drawOval(coords[0] - cellSize / 8, coords[1] - cellSize / 8, cellSize / 4, cellSize / 4);
                 } else if (!dom.isPlaceable()) {
                     g2D.setColor(Color.RED);
                     g2D.drawOval(coords[0] - cellSize / 8, coords[1] - cellSize / 8, cellSize / 4, cellSize / 4);
-                }
+                }*/
             }
         }
+    }
+
+    /// Color Changing Method ///
+    public Color getPhaseColor(int index) {
+        // adjust phase & index
+        double phase = colorPhase % FPS;
+        index = (colorIndex + index) % 4;
+        
+        // Vars
+        int newR = dirColors[index].getRed();
+        int newG = dirColors[index].getGreen();
+        int newB = dirColors[index].getBlue();
+        int index2 = (index + 1) % 4;
+
+        // Tween towards next RGB values
+        newR += (int) Math.round((dirColors[index2].getRed() - newR) * (phase / FPS));
+        newG += (int) Math.round((dirColors[index2].getGreen() - newG) * (phase / FPS));
+        newB += (int) Math.round((dirColors[index2].getBlue() - newB) * (phase / FPS));
+
+        // return new Color
+        return new Color(newR, newG, newB);
     }
 
     /// Diamond Grid Method ///
