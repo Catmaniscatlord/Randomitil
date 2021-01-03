@@ -145,7 +145,7 @@ public class DominoDrawer extends JPanel implements Runnable {
                 // Calculate coordinates
                 int cellStep = (int) Math.round(cellSize / 2);
                 coords[0] = i * cellStep + j * cellStep;
-                coords[1] =  j * cellStep - i * cellStep;
+                coords[1] =  i * cellStep - j * cellStep;
 
                 // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable()) {
