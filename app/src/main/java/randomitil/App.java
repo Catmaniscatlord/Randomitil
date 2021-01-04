@@ -1,7 +1,5 @@
 package randomitil;
 
-import java.util.Scanner;
-
 import randomitil.animation.*;
 
 public class App {
@@ -13,25 +11,25 @@ public class App {
         long startTime = System.nanoTime();
 
         // Set up Diamond for rendering
-        AztecDiamond diamond = new AztecDiamond(2, 2);
+        AztecDiamond diamond = new AztecDiamond(2,2,2,2);
         
         DominoIteration kevin = new DominoIteration(diamond);
-        kevin.setanimationMode(false);
+        kevin.setanimationMode(true);
         
         kevin.fillEmptySquares();
         System.out.println("new tiles");
         System.out.println(kevin.getAztecDiamond());
     
-        for (int i = 0; i < 400; i++) {
-            kevin.moveDominos(1);
+        for (int i = 0; i < 200; i++) {
+            kevin.moveDominos();
             kevin.fillEmptySquares();
             //System.out.println("new tiles");
-           // System.out.println(kevin.getAztecDiamond());
-            if (!kevin.getAztecDiamond().checkTiles().isEmpty()) {
-                System.out.println("oh booty cheeks");
-            }
+            //System.out.println(kevin.getAztecDiamond());
         }
-
+        
+        if (!kevin.getAztecDiamond().checkTiles().isEmpty()) {
+            System.out.println("oh booty cheeks");
+        }
         ui_drawer.updateDiamond(kevin.getAztecDiamond(), kevin, kevin.getAztecDiamond().getSize());
 
         long endTime = System.nanoTime();
