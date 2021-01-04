@@ -127,11 +127,11 @@ public class DominoDrawer extends JPanel implements Runnable {
         g2.scale(scale, scale);
 
         // Draw grid
-        //draw_grid(g2);
+        //drawGrid(g2);
 
         // Drawing Dominoes
         g2.translate((int) -Math.round((cellSize * (boardSize / 2.0 - 0.5))), 0);
-        draw_dominoes(g2, scale);
+        drawDominoes(g2, scale);
 
         // Resync drawing
         Toolkit.getDefaultToolkit().sync();
@@ -161,7 +161,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Domino Drawing Method ///
-    public void draw_dominoes(Graphics2D g2D, double scale) {
+    public void drawDominoes(Graphics2D g2D, double scale) {
         // Setup Variables
         Domino dom = null;
         int[] coords = new int[2];
@@ -288,7 +288,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Diamond Grid Method ///
-    public void draw_grid(Graphics2D g2D) {
+    public void drawGrid(Graphics2D g2D) {
         // Draw Diamond
         if (boardSize > 0) {
             for (int i = 0; i < boardSize / 2; i++) {
@@ -308,24 +308,24 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Setter Methods ///---------------------------------------------------------
 
     /// UI Scale ///
-    public void set_uiScale(double uiScale) {
+    public void setUiScale(double uiScale) {
         paintSize = (int) Math.round(400 * uiScale);
         paintOffset = (int) Math.round(paintSize / 8.0);
         cellSize = (int) Math.round(paintSize / 2.0);
     }
 
     /// Animate? ///
-    public void set_animate(boolean animate) {
+    public void setAnimate(boolean animate) {
         this.animate = animate;
     }
 
     /// Color Change? ///
-    public void set_colorChange(boolean colorChange) {
+    public void setColorChange(boolean colorChange) {
         this.colorChange = colorChange;
     }
 
     /// Direction Colors ///
-    public void set_dirColors(Color uColor, Color rColor, Color dColor, Color lColor) {
+    public void setDirColors(Color uColor, Color rColor, Color dColor, Color lColor) {
         this.dirColors[0] = uColor;
         this.dirColors[1] = rColor;
         this.dirColors[2] = dColor;
@@ -333,74 +333,74 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Anim Speed ///
-    public void set_animSpeed(int animSpeed) {
+    public void setAnimSpeed(int animSpeed) {
         this.animSpeed = animSpeed;
     }
 
     /// Board Size ///
-    public void set_boardSize(int boardSize) {
+    public void setBoardSize(int boardSize) {
         this.boardSize = boardSize;
     }
 
     /// Board Width ///
-    public void set_boardWidth(int boardWidth) {
+    public void setBoardWidth(int boardWidth) {
         this.boardWidth = boardWidth;
     }
 
     /// Board Height ///
-    public void set_boardHeight(int boardHeight) {
+    public void setBoardHeight(int boardHeight) {
         this.boardHeight = boardHeight;
     }
 
     /// final Size ///
-    public void set_finalSize(int finalSize) {
+    public void setFinalSize(int finalSize) {
         this.finalSize = finalSize;
     }
 
     /// Getter Methods ///---------------------------------------------------------
 
     /// UI Scale ///
-    public double get_uiScale() {
+    public double getUiScale() {
         return (double) paintSize / 400;
     }
 
     /// Animate? ///
-    public boolean get_animate() {
+    public boolean getAnimate() {
         return this.animate;
     }
 
     /// Color Change? ///
-    public boolean get_colorChange() {
+    public boolean getColorChange() {
         return this.colorChange;
     }
 
     /// Direction Colors ///
-    public Color[] get_dirColors() {
+    public Color[] getDirColors() {
         return this.dirColors;
     }
 
     /// Anim Speed ///
-    public int get_animSpeed() {
+    public int getAnimSpeed() {
         return this.animSpeed;
     }
 
     /// Board Size ///
-    public int get_boardSize() {
+    public int getBoardSize() {
         return this.boardSize;
     }
 
     /// Board Width ///
-    public int get_boardWidth() {
+    public int getBoardWidth() {
         return this.boardWidth;
     }
 
     /// Board Height ///
-    public int get_boardHeight() {
+    public int getBoardHeight() {
         return this.boardHeight;
     }
 
     /// final Size ///
-    public int get_finalSize() {
+    public int getFinalSize() {
         return this.finalSize;
     }
 }
