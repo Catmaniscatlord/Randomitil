@@ -38,21 +38,23 @@ public class DominoIteration {
          *
          * note: the indice of the square and tiles in the aztec diamond corralate in a somewhat 1-1 manner
          */
+        boolean isEmpty;
         this.emptySquares = new boolean[this.aztecDiamond.getSize() - 1][this.aztecDiamond.getSize() - 1];
         for (int i = 0; i < this.emptySquares.length; i++) {
             for (int j = 0; j < this.emptySquares[i].length; j++) {
                 // only when the tile isnt null may the tile be empty and  
                 // if the orientation of the tile is vertical, then the square my be valid
                 if(this.aztecDiamond.getTile(i, j) == null && aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
+                    isEmpty = true;
                     if(!this.aztecDiamond.tileHasNeighbors(i, j)) {
                         for (int k = 0; k < 2; k++) {
                             for (int l = 0; l < 2; l++) {
                                 if (this.aztecDiamond.tileHasNeighbors(k + i, l + j)) {
-                                    this.emptySquares[i][j] = false;
+                                    isEmpty = false;
                                 }
                             }
                         }
-                        this.emptySquares[i][j] = true;
+                        this.emptySquares[i][j] = isEmpty;
                     }
                 }
             }
@@ -117,11 +119,13 @@ public class DominoIteration {
         }
     }
 
-    public void moveDominos(int expansionSize) {
+    public void moveDominos() {
         removeOpposingTiles();
-        aztecDiamond.expand(expansionSize);
+        aztecDiamond.expand();
         Domino tile;
-        AztecDiamond newDiamond = new AztecDiamond(aztecDiamond.getWidth(),aztecDiamond.getHeight());
+        AztecDiamond newDiamond = new AztecDiamond(aztecDiamond.getWidth(),aztecDiamond.getHeight(),aztecDiamond.getWidthRate(),aztecDiamond.getHeightRate());
+        newDiamond.setIteration(aztecDiamond.getIteration() + 1);
+        newDiamond.setUpTiles();
         for (int i = 0; i < aztecDiamond.getSize(); i++) {
             for (int j = 0; j < aztecDiamond.getSize(); j++) {
                 tile = aztecDiamond.getTile(i, j);

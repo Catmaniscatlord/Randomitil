@@ -12,7 +12,7 @@ public class Domino
     }
 
     public Domino(boolean placeable) {
-        this(null,false);
+        this(null, placeable);
     }
 
     public Domino(Direction direction, boolean placeable)
