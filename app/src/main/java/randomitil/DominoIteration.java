@@ -8,7 +8,7 @@ public class DominoIteration {
     private AztecDiamond aztecDiamond;
     private AztecDiamond removedTiles;
     private AztecDiamond generatedTiles;
-    private boolean[][] emptyTiles;
+
     private boolean[][] emptySquares;
     private boolean animationMode = false;
 
@@ -21,59 +21,43 @@ public class DominoIteration {
         this.tilingBias = 0.5;
     }
 
-    private void findEmptyTiles() {
-        this.emptyTiles = new boolean[this.aztecDiamond.getSize()][this.aztecDiamond.getSize()];
-        for (int i = 0; i < this.emptyTiles.length; i++) {
-            for (int j = 0; j < this.emptyTiles[i].length; j++) {
-                if(aztecDiamond.getTile(i, j) == null) {    
-                    this.emptyTiles[i][j] = !this.aztecDiamond.tileHasNeighbors(i, j);
-                }
-                else
-                    this.emptyTiles[i][j] = false;
-            }
-        }
-    }
 
     /*
-     * This function checks the tiles around the given cooridnates int he folloing
+     * This function checks the tiles around the given cooridnates int the folloing
      * fasion 
      * [_] [_] [_] 
      * [_] [X] [*] 
      * [_] [*] [*]
      * 
-     * and returns false if any are true
-     * 
-     * Do not check for tiles at the end of a coloumn or row
+     * and sets to false if any have neighbors
      */
 
-    private boolean isEmptySquare(int y, int x) {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                if (!this.emptyTiles[i + y][j + x]) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     private void findEmptySquares() {
-        findEmptyTiles();
+        /* we subtract one because empty squares needs a space of 2 tiles
+         * the size of a tile at the end of the array is 1, so we subtract
+         *
+         * note: the indice of the square and tiles in the aztec diamond corralate in a somewhat 1-1 manner
+         */
         this.emptySquares = new boolean[this.aztecDiamond.getSize() - 1][this.aztecDiamond.getSize() - 1];
-        // we subtract one so that we don't check the final row and column
-        // as they aren't important
-        for (int i = 0; i < this.emptyTiles.length - 1; i++) {
-            for (int j = 0; j < this.emptyTiles[i].length - 1; j++) {
-                // if the orientation of the tile is vertical, the the square my be valid
-                if (aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
-                    this.emptySquares[i][j] = isEmptySquare(i, j);
-                } else {
-                    this.emptySquares[i][j] = false;
+        for (int i = 0; i < this.emptySquares.length; i++) {
+            for (int j = 0; j < this.emptySquares[i].length; j++) {
+                // only when the tile isnt null may the tile be empty and  
+                // if the orientation of the tile is vertical, then the square my be valid
+                if(this.aztecDiamond.getTile(i, j) == null && aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
+                    if(!this.aztecDiamond.tileHasNeighbors(i, j)) {
+                        for (int k = 0; k < 2; k++) {
+                            for (int l = 0; l < 2; l++) {
+                                if (this.aztecDiamond.tileHasNeighbors(k + i, l + j)) {
+                                    this.emptySquares[i][j] = false;
+                                }
+                            }
+                        }
+                        this.emptySquares[i][j] = true;
+                    }
                 }
             }
         }
     }
-
     
     // might change this algorithm later
     public void fillEmptySquares() {
@@ -107,6 +91,9 @@ public class DominoIteration {
                             this.emptySquares[neighborY[k] + i][neighborX[k] + j] = false;
                         }  
                     }
+                    // since the above algorithm sets the next tile 
+                    //in the array to false we can skip over it
+                    j++;
                 }
             }
         }
@@ -153,6 +140,9 @@ public class DominoIteration {
                         newDiamond.setTile(i + 1, j + 1, tile);
                         break;
                     }
+                    // in all valid tilings the next item in the array must be null
+                    // this loops over the next tile
+                    j++;
                 }
             }
         }
@@ -212,25 +202,13 @@ public class DominoIteration {
                             }
                         } 
                     }
+                    // in all valid tilings the next item in the array must be null
+                    // this loops over the next tile
+                    j++;
                 }
             }
         }
     }
-
-    public String emptyTilesString() {
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < this.emptyTiles.length; i++) {
-            buf.append('[');
-            for (int j = 0; j < this.emptyTiles[i].length; j++) {
-                buf.append(this.emptyTiles[i][j]);
-                if (j != this.emptyTiles[i].length - 1)
-                    buf.append(",");
-            }
-            buf.append("]\n");
-        }
-        return buf.toString();
-    }
-
     
     public String emptySquaresString() {
         StringBuffer buf = new StringBuffer();
@@ -264,10 +242,6 @@ public class DominoIteration {
 
     public boolean[][] getEmptySquares() {
         return emptySquares;
-    }
-
-    public boolean[][] getEmptyTiles() {
-        return emptyTiles;
     }
     
     public void setanimationMode(boolean animationMode) {

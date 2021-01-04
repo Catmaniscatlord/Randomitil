@@ -18,7 +18,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     final int FPS = 30;
     final int DELAY = (int) Math.round(1000 / FPS);
     final int paintOffset = 50;
-    final int paintSize = 400;
+    final int paintSize = 1000;
     final int cellSize = 200;
     int frameNum = 0;
 
@@ -37,10 +37,10 @@ public class DominoDrawer extends JPanel implements Runnable {
         setPreferredSize(new Dimension(500, 500));
 
         // Set Color Coding
-        dirColors[0] = new Color(0, 0, 255);   // UP Color
-        dirColors[1] = new Color(255, 0, 0);   // RIGHT Color
-        dirColors[2] = new Color(255, 255, 0);   // DOWN Color
-        dirColors[3] = new Color(0, 255, 0); // LEFT Color
+        dirColors[0] = new Color(180, 180, 180);   // UP Color
+        dirColors[1] = new Color(125, 125, 125);   // RIGHT Color
+        dirColors[2] = new Color(40, 40, 40);   // DOWN Color
+        dirColors[3] = new Color(125, 125, 125); // LEFT Color
     }
 
     /// Update Diamond ///
@@ -169,6 +169,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                 // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable()) {
+                    
                     // Change drawing based on direction
                     switch(dom.getDirection()) {
                         case UP: 
@@ -239,7 +240,9 @@ public class DominoDrawer extends JPanel implements Runnable {
                             }
                             break;
                     }
-
+                    // in all valid tilings the next item in the array must be null
+                    // this loops over the next tile
+                    j++;
                 }
 
                 // Draw Point
