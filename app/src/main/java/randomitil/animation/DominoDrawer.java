@@ -13,20 +13,28 @@ public class DominoDrawer extends JPanel implements Runnable {
     // Serialization
     private static final long serialVersionUID = 3337828037218852291L;
 
-    // Global Variables
-    Thread animator;
-    final int FPS = 30;
-    final int DELAY = (int) Math.round(1000 / FPS);
-    final int paintOffset = 50;
-    final int paintSize = 1000;
-    final int cellSize = 200;
+    // GUI Variables
+    boolean animate = true;
+    boolean colorChange = false;
+    int animSpeed = 1;
     int frameNum = 0;
+    
+    // Animation Variables
+    Thread animator;
+    final int FPS = 60;
+    final int DELAY = (int) Math.round(1000.0 / FPS);
+    int paintSize = 400;
+    int paintOffset = (int) Math.round(paintSize / 8.0);
+    int cellSize = (int) Math.round(paintSize / 2.0);
 
     double colorPhase = 0;
     int colorIndex = 0;
     Color[] dirColors = new Color[4];
 
+    int boardWidth = 2;
+    int boardHeight = 2;
     int boardSize = -1;
+    int finalSize = 4;
     AztecDiamond mainTiles;
     DominoIteration calc;
 
@@ -37,10 +45,10 @@ public class DominoDrawer extends JPanel implements Runnable {
         setPreferredSize(new Dimension(500, 500));
 
         // Set Color Coding
-        dirColors[0] = new Color(180, 180, 180);   // UP Color
-        dirColors[1] = new Color(125, 125, 125);   // RIGHT Color
-        dirColors[2] = new Color(40, 40, 40);   // DOWN Color
-        dirColors[3] = new Color(125, 125, 125); // LEFT Color
+        dirColors[0] = new Color(0, 0, 255);   // UP Color
+        dirColors[1] = new Color(255, 0, 0);   // RIGHT Color
+        dirColors[2] = new Color(0, 255, 0);   // DOWN Color
+        dirColors[3] = new Color(255, 255, 0); // LEFT Color
     }
 
     /// Update Diamond ///
@@ -133,19 +141,21 @@ public class DominoDrawer extends JPanel implements Runnable {
     public void nextFrame() {
         // Change Frame
         if (frameNum < FPS) {
-            frameNum++;
+            frameNum += animSpeed;
         } else {
             frameNum = 0;
         }
 
         // Change Color Phase
-        if (colorPhase + 1 < FPS) {
-            colorPhase += 1;
-        } else {
-            colorPhase = 0;
-            colorIndex++;
-            if (colorIndex >= 4) {
-                colorIndex = 0;
+        if (colorChange) {
+            if (colorPhase + 1 < FPS) {
+                colorPhase += animSpeed;
+            } else {
+                colorPhase = 0;
+                colorIndex++;
+                if (colorIndex >= 4) {
+                    colorIndex = 0;
+                }
             }
         }
     }
@@ -169,7 +179,6 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                 // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable()) {
-                    
                     // Change drawing based on direction
                     switch(dom.getDirection()) {
                         case UP: 
@@ -240,9 +249,9 @@ public class DominoDrawer extends JPanel implements Runnable {
                             }
                             break;
                     }
-                    // in all valid tilings the next item in the array must be null
-                    // this loops over the next tile
-                    j++;
+                
+                // Skip over Null Domino
+                j++;
                 }
 
                 // Draw Point
@@ -294,5 +303,104 @@ public class DominoDrawer extends JPanel implements Runnable {
                 }
             }
         }
+    }
+
+    /// Setter Methods ///---------------------------------------------------------
+
+    /// UI Scale ///
+    public void set_uiScale(double uiScale) {
+        paintSize = (int) Math.round(400 * uiScale);
+        paintOffset = (int) Math.round(paintSize / 8.0);
+        cellSize = (int) Math.round(paintSize / 2.0);
+    }
+
+    /// Animate? ///
+    public void set_animate(boolean animate) {
+        this.animate = animate;
+    }
+
+    /// Color Change? ///
+    public void set_colorChange(boolean colorChange) {
+        this.colorChange = colorChange;
+    }
+
+    /// Direction Colors ///
+    public void set_dirColors(Color uColor, Color rColor, Color dColor, Color lColor) {
+        this.dirColors[0] = uColor;
+        this.dirColors[1] = rColor;
+        this.dirColors[2] = dColor;
+        this.dirColors[3] = lColor;
+    }
+
+    /// Anim Speed ///
+    public void set_animSpeed(int animSpeed) {
+        this.animSpeed = animSpeed;
+    }
+
+    /// Board Size ///
+    public void set_boardSize(int boardSize) {
+        this.boardSize = boardSize;
+    }
+
+    /// Board Width ///
+    public void set_boardWidth(int boardWidth) {
+        this.boardWidth = boardWidth;
+    }
+
+    /// Board Height ///
+    public void set_boardHeight(int boardHeight) {
+        this.boardHeight = boardHeight;
+    }
+
+    /// final Size ///
+    public void set_finalSize(int finalSize) {
+        this.finalSize = finalSize;
+    }
+
+    /// Getter Methods ///---------------------------------------------------------
+
+    /// UI Scale ///
+    public double get_uiScale() {
+        return (double) paintSize / 400;
+    }
+
+    /// Animate? ///
+    public boolean get_animate() {
+        return this.animate;
+    }
+
+    /// Color Change? ///
+    public boolean get_colorChange() {
+        return this.colorChange;
+    }
+
+    /// Direction Colors ///
+    public Color[] get_dirColors() {
+        return this.dirColors;
+    }
+
+    /// Anim Speed ///
+    public int get_animSpeed() {
+        return this.animSpeed;
+    }
+
+    /// Board Size ///
+    public int get_boardSize() {
+        return this.boardSize;
+    }
+
+    /// Board Width ///
+    public int get_boardWidth() {
+        return this.boardWidth;
+    }
+
+    /// Board Height ///
+    public int get_boardHeight() {
+        return this.boardHeight;
+    }
+
+    /// final Size ///
+    public int get_finalSize() {
+        return this.finalSize;
     }
 }
