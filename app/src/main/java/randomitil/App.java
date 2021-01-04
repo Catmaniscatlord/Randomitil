@@ -10,17 +10,19 @@ public class App {
         DominoDrawer ui_drawer = new DominoDrawer();
         DominoInterface.setup(ui_drawer);
         
+        long startTime = System.nanoTime();
+
         // Set up Diamond for rendering
         AztecDiamond diamond = new AztecDiamond(2, 2);
         
         DominoIteration kevin = new DominoIteration(diamond);
-        kevin.setanimationMode(true);
+        kevin.setanimationMode(false);
         
         kevin.fillEmptySquares();
         System.out.println("new tiles");
         System.out.println(kevin.getAztecDiamond());
     
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 400; i++) {
             kevin.moveDominos(1);
             kevin.fillEmptySquares();
             //System.out.println("new tiles");
@@ -31,5 +33,10 @@ public class App {
         }
 
         ui_drawer.updateDiamond(kevin.getAztecDiamond(), kevin, kevin.getAztecDiamond().getSize());
+
+        long endTime = System.nanoTime();
+        long timeElapsed = endTime - startTime;
+
+        System.out.println("time taken : " + timeElapsed/1000000);
     }
 }
