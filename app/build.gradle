@@ -26,5 +26,6 @@ application {
 jar {
     manifest {
         attributes 'Main-Class': 'randomitil.App'
-    }   
+    }
+    baseName 'randomitil'
 }
