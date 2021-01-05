@@ -45,10 +45,10 @@ public class DominoDrawer extends JPanel implements Runnable {
         setPreferredSize(new Dimension(500, 500));
 
         // Set Color Coding
-        dirColors[0] = new Color(0, 0, 255);   // UP Color
-        dirColors[1] = new Color(255, 0, 0);   // RIGHT Color
-        dirColors[2] = new Color(0, 255, 0);   // DOWN Color
-        dirColors[3] = new Color(255, 255, 0); // LEFT Color
+        dirColors[0] = new Color(0, 0, 255);    // UP Color
+        dirColors[1] = new Color(255, 0, 0);    // RIGHT Color
+        dirColors[2] = new Color(255, 255, 0);  // DOWN Color
+        dirColors[3] = new Color(0, 255, 0);    // LEFT Color
     }
 
     /// Update Diamond ///
