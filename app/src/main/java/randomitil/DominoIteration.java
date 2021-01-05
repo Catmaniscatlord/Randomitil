@@ -76,11 +76,11 @@ public class DominoIteration {
         int[] neighborX = {2,1,0,-1,0};
         int[] neighborY = {0,1,2,1,0};
         /* these arrays will access the neighbors in the following order
-         * [*,*,1,*,*]
-         * [*,8,*,2,*]
-         * [7,*,9,*,3]
-         * [*,6,*,4,*]
-         * [*,*,5,*,*]
+         * [*,*,*,*,*]
+         * [*,*,*,*,*]
+         * [*,*,5,*,1]
+         * [*,4,*,2,*]
+         * [*,*,3,*,*]
         */
 
         for (int i = 0; i < this.emptySquares.length; i++) {
