@@ -26,10 +26,14 @@ public class AztecDiamond {
     }
     
     public AztecDiamond(int width, int height, int widthRate, int heightRate){
+        this(width, height, widthRate, heightRate, 0);
+    }
+
+    public AztecDiamond(int width, int height, int widthRate, int heightRate, int iteration){
         createTiles(width, height);
         setHeightRate(heightRate);
         setWidthRate(widthRate);
-        this.iteration = 0;
+        this.iteration = iteration;
     }
 
     private void createTiles(int width, int height) {
@@ -40,12 +44,15 @@ public class AztecDiamond {
     }
 
     public void setUpTiles() {
-        if(this.width == this.height) {
-            if(this.widthRate == this.heightRate) {
-                if(this.expansionRate != 1){
+        if(this.widthRate == this.heightRate) {
+            if(this.expansionRate != 1){
+                if(this.width == this.height) {
                     sameSizeRateChamfer();
                 }
             }
+        }
+        else if(this.widthRate == 1 || this.heightRate == 1) {
+            sameSizeDiffRateChamfer();
         }
     }
 
@@ -83,26 +90,72 @@ public class AztecDiamond {
         }
     }
 
-    public void expand() {
-        /*
-         * this will remove all nonplaceable tiles before we expand non-placeable tiles
-         * only exist if width and height arent equal
-         */
-        if (this.width != this.height) {
-            for (int i = 0; i < this.size; i++) {
-                for (int j = 0; j < this.size; j++) {
-                    if (tiles[i][j] != null && !tiles[i][j].isPlaceable()) {
-                        tiles[i][j] = null;
+    private void sameSizeDiffRateChamfer() {
+        int[] chamfer;
+        int growthDifference = Math.abs(this.widthRate - this.heightRate);
+        int squareSize = 2 * growthDifference * this.iteration;
+        int blockHeight = 2 * (growthDifference + 1);
+        int blockWidth = 2 * growthDifference;
+        int blockOffset;
+
+        chamfer = new int[blockWidth];
+
+        for (int i = 0; i < chamfer.length; i++) {
+            chamfer[i] = 3 + (chamfer.length - i - 1);
+        }
+
+        Domino dom = new Domino(false);
+        if(this.heightRate > this.widthRate) { 
+            for (int k = 0; k < this.iteration; k++) {
+                blockOffset = 2 * (this.iteration - k - 1);
+                for (int i = 0; i < chamfer.length; i++) {
+                    for (int j = 0; j < chamfer[i] + (k * blockHeight); j++) {
+                        this.tiles[i + blockOffset][squareSize + j] = dom;  // left top
+                        this.tiles[squareSize + j][i + blockOffset] = dom;  // left bottom
+                        this.tiles[this.size - (i + blockOffset) - 1][this.size - (squareSize + j) - 1] = dom; // right top
+                        this.tiles[this.size - (j + squareSize) - 1][this.size - (i + blockOffset) - 1] = dom; // right bottom
                     }
                 }
             }
+            for (int i = 0; i < squareSize; i++) {
+                for (int j = 0; j < squareSize; j++) {
+                    this.tiles[i][j] = dom;
+                    this.tiles[this.size - i - 1][this.size - j - 1] = dom;
+                }
+            }
         }
-        int newSize = this.size + (2 * (2 * this.expansionRate - 1));
+        else {
+            for (int k = 0; k < this.iteration; k++) {
+                blockOffset = 2 * (this.iteration - k - 1);
+                for (int i = 0; i < chamfer.length; i++) {
+                    for (int j = 0; j < chamfer[i]; j++) {
+                        this.tiles[j + blockOffset][squareSize + i] = dom; // top left
+                        this.tiles[squareSize + i][j + blockOffset] = dom; // top right
+                        this.tiles[this.size + (j + blockOffset) - 1][this.size - (squareSize + i) - 1] = dom; // bottom left
+                        this.tiles[this.size - (j + squareSize) - 1][this.size - (j + blockOffset) - 1] = dom; // bottom right
+                    }
+                }
+            }
+
+            for (int i = 0; i < squareSize; i++) {
+                for (int j = 0; j < squareSize; j++) {
+                    this.tiles[this.size - i][j] = dom;
+                    this.tiles[i][this.size - j] = dom;
+                }
+            }
+        }
+    }
+
+
+    public void expand() {
+        int newSize = this.size + (2 * (2 * this.expansionRate - 1)); 
         expandWidth(2 * this.expansionRate - 1, this.size, newSize);
         expandHeight(2 * this.expansionRate - 1, this.size, newSize);
         this.size = newSize;
         this.width += 2 * (2 * this.widthRate - 1); 
         this.height += 2 * (2 * this.heightRate - 1);
+        this.iteration++;
+        setUpTiles();
     }
 
     private void expandWidth(int expansionSize, int oldSize, int newSize) {
@@ -213,6 +266,7 @@ public class AztecDiamond {
         if (neighbors.size() != 1) {
             for (Domino d : neighbors) {
                 if(d != null && d.isPlaceable()) {
+                    //System.out.println(neighbors);
                     return true;
                 }
             }
@@ -234,7 +288,7 @@ public class AztecDiamond {
     }
 
     public Orientation getOrientation(int y, int x) {
-        if ((y + x) % 2 == (this.width < this.height ? 0 : 1))
+        if ((y + x) % 2 == 1)
             return Orientation.HORIZONTAL;
         return Orientation.VERTICAL;
     }
@@ -291,6 +345,10 @@ public class AztecDiamond {
 
     public void setIteration(int iteration) {
         this.iteration = iteration;
+    }
+
+    public int getExpansionRate() {
+        return expansionRate;
     }
 
     @Override

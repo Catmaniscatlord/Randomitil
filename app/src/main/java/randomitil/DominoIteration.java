@@ -32,7 +32,7 @@ public class DominoIteration {
      * and sets to false if any have neighbors
      */
 
-    private void findEmptySquares() {
+    public void findEmptySquares() {
         /* we subtract one because empty squares needs a space of 2 tiles
          * the size of a tile at the end of the array is 1, so we subtract
          *
@@ -49,7 +49,8 @@ public class DominoIteration {
                     if(!this.aztecDiamond.tileHasNeighbors(i, j)) {
                         for (int k = 0; k < 2; k++) {
                             for (int l = 0; l < 2; l++) {
-                                if (this.aztecDiamond.tileHasNeighbors(k + i, l + j)) {
+                                if (this.aztecDiamond.tileHasNeighbors(k + i, l + j) || 
+                                    this.aztecDiamond.getTile(k + i, l + j) != null) {
                                     isEmpty = false;
                                 }
                             }
@@ -121,27 +122,28 @@ public class DominoIteration {
 
     public void moveDominos() {
         removeOpposingTiles();
-        aztecDiamond.expand();
+        AztecDiamond newDiamond = new AztecDiamond(aztecDiamond.getWidth(),aztecDiamond.getHeight(),
+                                                   aztecDiamond.getWidthRate(),aztecDiamond.getHeightRate(),
+                                                   aztecDiamond.getIteration());
+        newDiamond.expand();
+        int expansionRate =  2 * newDiamond.getExpansionRate() - 1;
         Domino tile;
-        AztecDiamond newDiamond = new AztecDiamond(aztecDiamond.getWidth(),aztecDiamond.getHeight(),aztecDiamond.getWidthRate(),aztecDiamond.getHeightRate());
-        newDiamond.setIteration(aztecDiamond.getIteration() + 1);
-        newDiamond.setUpTiles();
         for (int i = 0; i < aztecDiamond.getSize(); i++) {
             for (int j = 0; j < aztecDiamond.getSize(); j++) {
                 tile = aztecDiamond.getTile(i, j);
                 if(tile != null && tile.isPlaceable()){
                     switch (tile.getDirection()) {
                     case UP:
-                        newDiamond.setTile(i - 1, j + 1, tile);
+                        newDiamond.setTile(i + expansionRate - 1, j + expansionRate + 1, tile);
                         break;
                     case DOWN:
-                        newDiamond.setTile(i + 1, j - 1, tile);
+                        newDiamond.setTile(i + expansionRate + 1, j + expansionRate - 1, tile);
                         break;
                     case LEFT:
-                        newDiamond.setTile(i - 1, j - 1, tile);
+                        newDiamond.setTile(i + expansionRate - 1, j + expansionRate - 1, tile);
                         break;
                     case RIGHT:
-                        newDiamond.setTile(i + 1, j + 1, tile);
+                        newDiamond.setTile(i + expansionRate + 1, j + expansionRate + 1, tile);
                         break;
                     }
                     // in all valid tilings the next item in the array must be null
