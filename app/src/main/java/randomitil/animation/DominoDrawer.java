@@ -259,7 +259,7 @@ public class DominoDrawer extends JPanel implements Runnable {
                 // Retrive Domino
                 dom = mainTiles.getTile(i, j);
 
-                if (dom == null || (dom != null && dom.isPlaceable())) {
+                if (dom == null) {
                     // Calculate coordinates
                     coords[0] = i * cellStep + j * cellStep;
                     coords[1] =  i * cellStep - j * cellStep;
