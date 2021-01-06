@@ -128,19 +128,18 @@ public class AztecDiamond {
             for (int k = 0; k < this.iteration; k++) {
                 blockOffset = 2 * (this.iteration - k - 1);
                 for (int i = 0; i < chamfer.length; i++) {
-                    for (int j = 0; j < chamfer[i]; j++) {
-                        this.tiles[j + blockOffset][squareSize + i] = dom; // top left
-                        this.tiles[squareSize + i][j + blockOffset] = dom; // top right
-                        this.tiles[this.size + (j + blockOffset) - 1][this.size - (squareSize + i) - 1] = dom; // bottom left
-                        this.tiles[this.size - (j + squareSize) - 1][this.size - (j + blockOffset) - 1] = dom; // bottom right
+                    for (int j = 0; j < chamfer[i] + (k * blockHeight); j++) {
+                        this.tiles[this.size - (i + blockOffset) - 1][squareSize + j] = dom; // top left
+                        this.tiles[squareSize + j][this.size - (i + blockOffset) - 1] = dom; // top right
+                        this.tiles[i + blockOffset][this.size - (squareSize + j) - 1] = dom; // bottom left
+                        this.tiles[this.size - (j + squareSize) - 1][i + blockOffset] = dom; // bottom right
                     }
                 }
             }
-
             for (int i = 0; i < squareSize; i++) {
                 for (int j = 0; j < squareSize; j++) {
-                    this.tiles[this.size - i][j] = dom;
-                    this.tiles[i][this.size - j] = dom;
+                    this.tiles[this.size - i - 1][j] = dom;
+                    this.tiles[i][this.size - j - 1] = dom;
                 }
             }
         }
