@@ -126,7 +126,7 @@ public class DominoDrawer extends JPanel implements Runnable {
         g2.translate((int) Math.round((cellSize * scale) / 2) + paintOffset, (int) Math.round(paintSize / 2) + paintOffset);
         g2.scale(scale, scale);
 
-        if (scale > 0.01) {
+        if (scale > 0.005) {
             // Draw grid
             drawGrid(g2);
         }
@@ -296,9 +296,9 @@ public class DominoDrawer extends JPanel implements Runnable {
 
     /// Setter Methods ///---------------------------------------------------------
 
-    /// UI Scale ///
-    public void setUiScale(double uiScale) {
-        paintSize = (int) Math.round(400 * uiScale);
+    /// Display Size ///
+    public void setDisplaySize(int newSize) {
+        paintSize = newSize;
         paintOffset = (int) Math.round(paintSize / 8.0);
         cellSize = (int) Math.round(paintSize / 2.0);
     }
@@ -348,9 +348,9 @@ public class DominoDrawer extends JPanel implements Runnable {
 
     /// Getter Methods ///---------------------------------------------------------
 
-    /// UI Scale ///
-    public double getUiScale() {
-        return (double) paintSize / 400;
+    /// Display Size ///
+    public int getDisplaySize() {
+        return paintSize;
     }
 
     /// Animate? ///

@@ -12,7 +12,7 @@ public class App {
             DominoDrawer uiDrawer = new DominoDrawer();
             DominoInterface.setup(uiDrawer);
             
-            uiDrawer.setUiScale(2.5);
+            uiDrawer.setDisplaySize(600);
             long startTime = System.nanoTime();
 
             // Set up Diamond for rendering
@@ -25,7 +25,7 @@ public class App {
             System.out.println("new tiles");
             System.out.println(kevin.getAztecDiamond());
         
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 50; i++) {
                 kevin.moveDominos();
                 kevin.fillEmptySquares();
             }
