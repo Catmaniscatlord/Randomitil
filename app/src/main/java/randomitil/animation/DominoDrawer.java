@@ -30,6 +30,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     double colorPhase = 0;
     int colorIndex = 0;
     Color[] dirColors = new Color[4];
+    Color[] useColors = new Color[4];
 
     int boardWidth = 2;
     int boardHeight = 2;
@@ -168,6 +169,12 @@ public class DominoDrawer extends JPanel implements Runnable {
         int[] coords = new int[2];
         int cellStep = (int) Math.round(cellSize / 2);
 
+        // Phase Colors
+        useColors[0] = getPhaseColor(0);
+        useColors[1] = getPhaseColor(1);
+        useColors[2] = getPhaseColor(2);
+        useColors[3] = getPhaseColor(3);
+
         // Iterate through Diamond Matrix
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
@@ -184,7 +191,7 @@ public class DominoDrawer extends JPanel implements Runnable {
                     switch(dom.getDirection()) {
                         case UP: 
                             // Fill
-                            g2D.setColor(getPhaseColor(0));
+                            g2D.setColor(useColors[0]);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             
                             // Outline
@@ -196,7 +203,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                         case RIGHT: 
                             // Fill
-                            g2D.setColor(getPhaseColor(1));
+                            g2D.setColor(useColors[1]);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
 
                             // Outline
@@ -208,7 +215,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                         case DOWN: 
                             // Fill
-                            g2D.setColor(getPhaseColor(2));
+                            g2D.setColor(useColors[2]);
                             g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
 
                             // Outline
@@ -220,7 +227,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                         case LEFT: 
                             // Fill
-                            g2D.setColor(getPhaseColor(3));
+                            g2D.setColor(useColors[3]);
                             g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
 
                             // Outline
