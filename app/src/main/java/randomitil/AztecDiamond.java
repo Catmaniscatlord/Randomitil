@@ -12,6 +12,8 @@ public class AztecDiamond {
     private int height;
     private int size;
     private int expansionRate;
+    private boolean empty;
+    private boolean forcedEmpty;
     
     int iteration;
     int widthRate;
@@ -145,11 +147,15 @@ public class AztecDiamond {
         }
     }
 
-
     public void expand() {
-        int newSize = this.size + (2 * (2 * this.expansionRate - 1)); 
-        expandWidth(2 * this.expansionRate - 1, this.size, newSize);
-        expandHeight(2 * this.expansionRate - 1, this.size, newSize);
+        int newSize = this.size + (2 * (2 * this.expansionRate - 1));
+        if(!isEmpty()) {
+            expandWidth(2 * this.expansionRate - 1, this.size, newSize);
+            expandHeight(2 * this.expansionRate - 1, this.size, newSize);
+        } 
+        else {
+            this.tiles = new Domino[newSize][newSize];
+        }
         this.size = newSize;
         this.width += 2 * (2 * this.widthRate - 1); 
         this.height += 2 * (2 * this.heightRate - 1);
@@ -274,6 +280,8 @@ public class AztecDiamond {
     }
 
     public Boolean isEmpty() {
+        if(forcedEmpty)
+            return this.empty;
         Boolean isEmpty = true;
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
@@ -284,6 +292,11 @@ public class AztecDiamond {
             }
         }
         return isEmpty;
+    }
+
+    public void setEmpty(boolean empty) {
+        this.empty = empty;
+        this.forcedEmpty = true;
     }
 
     public Orientation getOrientation(int y, int x) {

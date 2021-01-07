@@ -125,6 +125,7 @@ public class DominoIteration {
         AztecDiamond newDiamond = new AztecDiamond(aztecDiamond.getWidth(),aztecDiamond.getHeight(),
                                                    aztecDiamond.getWidthRate(),aztecDiamond.getHeightRate(),
                                                    aztecDiamond.getIteration());
+        newDiamond.setEmpty(true);
         newDiamond.expand();
         int expansionRate =  2 * newDiamond.getExpansionRate() - 1;
         Domino tile;
@@ -152,6 +153,7 @@ public class DominoIteration {
                 }
             }
         }
+        newDiamond.setEmpty(false);
         this.aztecDiamond = newDiamond;
     }
 
