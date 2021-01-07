@@ -107,7 +107,7 @@ public class AztecDiamond {
         Domino dom = new Domino(false);
         if(this.heightRate > this.widthRate) { 
             for (int k = 0; k < this.iteration; k++) {
-                blockOffset = 2 * (this.iteration - k - 1);
+                blockOffset = blockWidth * (this.iteration - k - 1);
                 for (int i = 0; i < chamfer.length; i++) {
                     for (int j = 0; j < chamfer[i] + (k * blockHeight); j++) {
                         this.tiles[i + blockOffset][squareSize + j] = dom;  // left top
@@ -126,7 +126,7 @@ public class AztecDiamond {
         }
         else {
             for (int k = 0; k < this.iteration; k++) {
-                blockOffset = 2 * (this.iteration - k - 1);
+                blockOffset = blockWidth * (this.iteration - k - 1);
                 for (int i = 0; i < chamfer.length; i++) {
                     for (int j = 0; j < chamfer[i] + (k * blockHeight); j++) {
                         this.tiles[this.size - (i + blockOffset) - 1][squareSize + j] = dom; // top left

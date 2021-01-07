@@ -11,12 +11,13 @@ public class App {
             // Set up UI
             DominoDrawer uiDrawer = new DominoDrawer();
             DominoInterface.setup(uiDrawer);
-            
+
+            uiDrawer.setColorChange(true);
             uiDrawer.setDisplaySize(600);
             long startTime = System.nanoTime();
 
             // Set up Diamond for rendering
-            AztecDiamond diamond = new AztecDiamond(2,2,2,1);
+            AztecDiamond diamond = new AztecDiamond(2,2,1,5);
             
             DominoIteration kevin = new DominoIteration(diamond);
             kevin.setanimationMode(false);
@@ -25,9 +26,9 @@ public class App {
             System.out.println("new tiles");
             System.out.println(kevin.getAztecDiamond());
         
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 100; i++) {
                 kevin.moveDominos();
-                kevin.fillEmptySquares();
+                kevin.fillEmptySquares();        
             }
             
             if (!kevin.getAztecDiamond().checkTiles().isEmpty()) {
