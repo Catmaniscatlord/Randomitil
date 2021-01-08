@@ -7,6 +7,7 @@ import javax.swing.*;
 import randomitil.*;
 import java.lang.Runnable;
 import java.lang.Math;
+import java.awt.event.*;
 
 // Class Declaration
 public class DominoDrawer extends JPanel implements Runnable {
@@ -20,11 +21,15 @@ public class DominoDrawer extends JPanel implements Runnable {
     int frameNum = 0;
     
     // Animation Variables
-    Thread animator;
+    Thread animThread;
     final int FPS = 60;
     final int DELAY = (int) Math.round(1000.0 / FPS);
+
+    int displaySize = 500;
     int paintSize = 400;
-    int paintOffset = (int) Math.round(paintSize / 8.0);
+    int paintXOffset = 0;
+    int paintYOffset = 0;
+    int borderOffset = 50;
     int cellSize = (int) Math.round(paintSize / 2.0);
 
     double colorPhase = 0;
@@ -43,13 +48,50 @@ public class DominoDrawer extends JPanel implements Runnable {
     public DominoDrawer() {
         // Setup Background
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(500, 500));
+        setPreferredSize(new Dimension(400, 600));
+
+        // Event Listener
+        setupListeners();
 
         // Set Color Coding
         dirColors[0] = new Color(0, 0, 255);    // UP Color
         dirColors[1] = new Color(255, 0, 0);    // RIGHT Color
         dirColors[2] = new Color(255, 255, 0);  // DOWN Color
         dirColors[3] = new Color(0, 255, 0);    // LEFT Color
+    }
+
+    /// Setup Event Listener ///
+    public void setupListeners() {
+        // Setup Resize Event Calculations
+        class DrawingListener implements ComponentListener {
+                // Variables
+                DominoDrawer panel;
+                
+                /// Constructor ///
+                public DrawingListener(DominoDrawer panel) {
+                    this.panel = panel;
+                }
+                
+                /// Resize Event ///
+                public void componentResized(ComponentEvent e) {
+                    // Recalculate Display Size
+                    panel.setDisplaySize(e.getComponent().getWidth(), e.getComponent().getHeight());
+                }
+            
+                /// Shown Event ///
+                public void componentMoved(ComponentEvent e) {
+                }
+
+                /// Shown Event ///
+                public void componentShown(ComponentEvent e) {
+                }
+
+                /// Shown Event ///
+                public void componentHidden(ComponentEvent e) {
+                }
+        }
+
+        this.addComponentListener(new DrawingListener(this));
     }
 
     /// Update Diamond ///
@@ -105,10 +147,13 @@ public class DominoDrawer extends JPanel implements Runnable {
     public void addNotify() {
         // Super Method
         super.addNotify();
+
+        // Setup Canvas Sizing
+        setDisplaySize(getWidth(), getHeight());
         
         // Start Thread
-        animator = new Thread(this);
-        animator.start();
+        animThread = new Thread(this);
+        animThread.start();
     }
 
     /// Paint Method ///
@@ -121,10 +166,10 @@ public class DominoDrawer extends JPanel implements Runnable {
         double scale = ((double) paintSize / boardSize) / cellSize;
 
         // Draw Bounding Box
-        g.drawRect(paintOffset / 2, paintOffset / 2, paintSize + paintOffset, paintSize + paintOffset);
+        g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
 
         // Transform
-        g2.translate((int) Math.round((cellSize * scale) / 2) + paintOffset, (int) Math.round(paintSize / 2) + paintOffset);
+        g2.translate((int) Math.round((cellSize * scale) / 2) + borderOffset + paintXOffset, (int) Math.round(paintSize / 2) + borderOffset + paintYOffset);
         g2.scale(scale, scale);
 
         if (scale > 0.005) {
@@ -304,9 +349,18 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Setter Methods ///---------------------------------------------------------
 
     /// Display Size ///
-    public void setDisplaySize(int newSize) {
-        paintSize = newSize;
-        paintOffset = (int) Math.round(paintSize / 8.0);
+    public void setDisplaySize(int width, int height) {
+        if (height > width) {
+            displaySize = width;
+        } else {
+            displaySize = height;
+        }
+        paintSize = (int) Math.round(displaySize * 0.8);
+        borderOffset = (int) Math.round(paintSize / 8.0);
+
+        paintXOffset = (int) Math.max(0, (width - displaySize) / 2);
+        paintYOffset = (int) Math.max(0, (height - displaySize) / 2);
+
         cellSize = (int) Math.round(paintSize / 2.0);
     }
 
@@ -357,7 +411,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
     /// Display Size ///
     public int getDisplaySize() {
-        return paintSize;
+        return displaySize;
     }
 
     /// Animate? ///

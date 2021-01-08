@@ -9,15 +9,16 @@ public class App {
         for (int j = 0; j < 1; j++) {
             
             // Set up UI
-            DominoDrawer uiDrawer = new DominoDrawer();
-            DominoInterface.setup(uiDrawer);
+            DominoDrawer appDrawer = new DominoDrawer();
+            DominoUI appUi = new DominoUI(appDrawer);
+            DominoInterface.setup(appDrawer, appUi);
 
-            uiDrawer.setColorChange(true);
-            uiDrawer.setDisplaySize(600);
+            appDrawer.setColorChange(true);
+            appDrawer.setDisplaySize(300, 300);
             long startTime = System.nanoTime();
 
             // Set up Diamond for rendering
-            AztecDiamond diamond = new AztecDiamond(2,2,1,5);
+            AztecDiamond diamond = new AztecDiamond(2,2,3,3);
             
             DominoIteration kevin = new DominoIteration(diamond);
             kevin.setanimationMode(false);
@@ -34,7 +35,7 @@ public class App {
             if (!kevin.getAztecDiamond().checkTiles().isEmpty()) {
                 System.out.println("oh booty cheeks");
             }
-            uiDrawer.updateDiamond(kevin.getAztecDiamond(), kevin, kevin.getAztecDiamond().getSize());
+            appDrawer.updateDiamond(kevin.getAztecDiamond(), kevin, kevin.getAztecDiamond().getSize());
 
             long endTime = System.nanoTime();
             long timeElapsed = endTime - startTime;

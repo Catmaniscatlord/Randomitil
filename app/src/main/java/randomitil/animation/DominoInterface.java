@@ -3,7 +3,8 @@ package randomitil.animation;
 
 // Imports
 import java.awt.EventQueue;
-import javax.swing.JFrame;
+import java.awt.GridLayout;
+import javax.swing.*;
 
 // Class Declaration
 public class DominoInterface extends JFrame {
@@ -12,18 +13,26 @@ public class DominoInterface extends JFrame {
 
     // Globals
     public DominoDrawer drawer = null;
+    public DominoUI ui = null;
+    public JPanel mainPanel = null;
 
     /// Constructor ///
-    public DominoInterface(DominoDrawer _drawer) {
-        // Initialize UI
-        initUI(_drawer);
+    public DominoInterface(DominoDrawer drawer, DominoUI ui) {
+        // Initialize GUI Components
+        this.drawer = drawer;
+        this.ui = ui;
+        initUI();
     }
     
     /// Initialization ///
-    private void initUI(DominoDrawer _drawer) {
+    private void initUI() {
         // Add Domino Drawing Region
-        this.drawer = _drawer;
-        add(this.drawer);
+        mainPanel = new JPanel(new GridLayout(1, 2));
+        mainPanel.add(this.drawer);
+        mainPanel.add(this.ui);
+
+        // Add Main Panel
+        add(this.mainPanel);
 
         // Setup
         setResizable(true);
@@ -34,10 +43,10 @@ public class DominoInterface extends JFrame {
     }
 
     /// Setup Method ///
-    public static void setup(DominoDrawer _drawer) {
+    public static void setup(DominoDrawer drawer, DominoUI ui) {
         EventQueue.invokeLater(() -> {
             // Create Self
-            JFrame ex = new DominoInterface(_drawer);
+            JFrame ex = new DominoInterface(drawer, ui);
 
             // Set Visibility
             ex.setVisible(true);
