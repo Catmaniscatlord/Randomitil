@@ -18,16 +18,16 @@ public class App {
             long startTime = System.nanoTime();
 
             // Set up Diamond for rendering
-            AztecDiamond diamond = new AztecDiamond(2,2,3,3);
+            AztecDiamond diamond = new AztecDiamond();
             
-            DominoIteration kevin = new DominoIteration(diamond);
-            kevin.setanimationMode(false);
+            DominoIteration kevin = new DominoIteration(diamond,1,1);
+            kevin.setAnimationMode(false);
 
             kevin.fillEmptySquares();
             System.out.println("new tiles");
             System.out.println(kevin.getAztecDiamond());
         
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1000; i++) {
                 kevin.moveDominos();
                 kevin.fillEmptySquares();        
             }
@@ -44,3 +44,4 @@ public class App {
         }
     }
 }
+ 
