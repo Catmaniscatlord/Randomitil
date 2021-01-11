@@ -13,13 +13,10 @@ public class App {
             DominoUI appUi = new DominoUI(appDrawer);
             DominoInterface.setup(appDrawer, appUi);
 
-            appDrawer.setColorChange(true);
-            appDrawer.setDisplaySize(300, 300);
             long startTime = System.nanoTime();
 
             // Set up Diamond for rendering
-            AztecDiamond diamond = new AztecDiamond(2,2,3,3);
-            
+            AztecDiamond diamond = new AztecDiamond(2,2,1,1);
             DominoIteration kevin = new DominoIteration(diamond);
             kevin.setanimationMode(false);
 

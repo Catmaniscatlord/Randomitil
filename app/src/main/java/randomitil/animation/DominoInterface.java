@@ -4,6 +4,7 @@ package randomitil.animation;
 // Imports
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.event.*;
 import javax.swing.*;
 
 // Class Declaration
@@ -26,7 +27,7 @@ public class DominoInterface extends JFrame {
     
     /// Initialization ///
     private void initUI() {
-        // Add Domino Drawing Region
+        // Create main panel
         mainPanel = new JPanel(new GridLayout(1, 2));
         mainPanel.add(this.drawer);
         mainPanel.add(this.ui);

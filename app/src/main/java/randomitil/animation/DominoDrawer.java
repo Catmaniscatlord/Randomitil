@@ -33,6 +33,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     int cellSize = (int) Math.round(paintSize / 2.0);
 
     double colorPhase = 0;
+    int colorStep = -1;
     int colorIndex = 0;
     Color[] dirColors = new Color[4];
     Color[] useColors = new Color[4];
@@ -47,7 +48,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Constructor ///
     public DominoDrawer() {
         // Setup Background
-        setBackground(Color.WHITE);
+        setBackground(new Color(245, 245, 245));
         setPreferredSize(new Dimension(400, 600));
 
         // Event Listener
@@ -199,10 +200,9 @@ public class DominoDrawer extends JPanel implements Runnable {
                 colorPhase += animSpeed;
             } else {
                 colorPhase = 0;
-                colorIndex++;
-                if (colorIndex >= 4) {
-                    colorIndex = 0;
-                }
+                colorIndex += animSpeed * colorStep;
+                // Wrapping
+                colorIndex = wrapVal(colorIndex, 0, 3);
             }
         }
     }
@@ -325,17 +325,30 @@ public class DominoDrawer extends JPanel implements Runnable {
         }
     }
 
+    /// Wrap values Method ///
+    public int wrapVal(int val, int min, int max) {
+        if (val > max) {
+            val = min + (Math.abs(val - max) - 1) % (Math.abs(max - min));
+        }
+        
+        if (val < min) {
+            val = max - (Math.abs(min - val) - 1) % (Math.abs(max - min));
+        }
+
+        return val;
+    }
+
     /// Color Changing Method ///
     public Color getPhaseColor(int index) {
         // adjust phase & index
         double phase = colorPhase % FPS;
-        index = (colorIndex + index) % 4;
+        index = wrapVal(colorIndex + index, 0, 3);
         
         // Vars
         int newR = dirColors[index].getRed();
         int newG = dirColors[index].getGreen();
         int newB = dirColors[index].getBlue();
-        int index2 = (index + 1) % 4;
+        int index2 = wrapVal(index + colorStep, 0, 3);
 
         // Tween towards next RGB values
         newR += (int) Math.round((dirColors[index2].getRed() - newR) * (phase / FPS));
@@ -344,6 +357,18 @@ public class DominoDrawer extends JPanel implements Runnable {
 
         // return new Color
         return new Color(newR, newG, newB);
+    }
+
+    /// Stop Color Changing ///
+    public void stopColorChange() {
+        // set Color Change
+        this.setColorChange(false);
+
+        // Reset Color Variables to default
+        if (!colorChange) {
+            colorPhase = 0;
+            colorIndex = 0;
+        }
     }
 
     /// Setter Methods ///---------------------------------------------------------
@@ -372,6 +397,11 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Color Change? ///
     public void setColorChange(boolean colorChange) {
         this.colorChange = colorChange;
+    }
+
+    /// Color Step Direction ///
+    public void setColorStep(int colorStep) {
+        this.colorStep = colorStep;
     }
 
     /// Direction Colors ///
@@ -422,6 +452,11 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Color Change? ///
     public boolean getColorChange() {
         return this.colorChange;
+    }
+
+    /// Color Step Direction ///
+    public int getColorStep() {
+        return this.colorStep;
     }
 
     /// Direction Colors ///
