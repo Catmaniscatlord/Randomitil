@@ -9,6 +9,11 @@ public class DominoIteration {
     private AztecDiamond removedTiles;
     private AztecDiamond generatedTiles;
 
+    private int expansionRate;
+    private int widthRate;
+    private int heightRate;
+    private int iteration;
+
     private boolean[][] emptySquares;
     private boolean animationMode = false;
 
@@ -16,117 +21,27 @@ public class DominoIteration {
 
     private Random rand = new Random();
 
-    public DominoIteration(AztecDiamond aztecDiamond) {
+    public DominoIteration(AztecDiamond aztecDiamond, int widthRate, int heightRate) {
         this.aztecDiamond = aztecDiamond;
         this.tilingBias = 0.5;
+        this.aztecDiamond.setHeightRate(heightRate);
+        this.aztecDiamond.setWidthRate(widthRate);
+        this.iteration = aztecDiamond.getIteration();
     }
 
-
-    /*
-     * This function checks the tiles around the given cooridnates int the folloing
-     * fasion 
-     * [_] [_] [_] 
-     * [_] [X] [*] 
-     * [_] [*] [*]
-     * 
-     * and sets to false if any have neighbors
-     */
-
-    public void findEmptySquares() {
-        /* we subtract one because empty squares needs a space of 2 tiles
-         * the size of a tile at the end of the array is 1, so we subtract
-         *
-         * note: the indice of the square and tiles in the aztec diamond corralate in a somewhat 1-1 manner
-         */
-        boolean isEmpty;
-        this.emptySquares = new boolean[this.aztecDiamond.getSize() - 1][this.aztecDiamond.getSize() - 1];
-        for (int i = 0; i < this.emptySquares.length; i++) {
-            for (int j = 0; j < this.emptySquares[i].length; j++) {
-                // only when the tile isnt null may the tile be empty and  
-                // if the orientation of the tile is vertical, then the square my be valid
-                if(this.aztecDiamond.getTile(i, j) == null && aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
-                    isEmpty = true;
-                    if(!this.aztecDiamond.tileHasNeighbors(i, j)) {
-                        for (int k = 0; k < 2; k++) {
-                            for (int l = 0; l < 2; l++) {
-                                if (this.aztecDiamond.tileHasNeighbors(k + i, l + j) || 
-                                    this.aztecDiamond.getTile(k + i, l + j) != null) {
-                                    isEmpty = false;
-                                }
-                            }
-                        }
-                        this.emptySquares[i][j] = isEmpty;
-                    }
-                }
-            }
-        }
-    }
-    
-    // might change this algorithm later
-    public void fillEmptySquares() {
-        findEmptySquares();
-        if(this.animationMode) {
-            if(this.generatedTiles == null) {
-                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
-            }
-            if(this.generatedTiles.getSize() != this.aztecDiamond.getSize()) {
-                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
-            }
-        }
-
-        int[] neighborX = {2,1,0,-1,0};
-        int[] neighborY = {0,1,2,1,0};
-        /* these arrays will access the neighbors in the following order
-         * [*,*,*,*,*]
-         * [*,*,*,*,*]
-         * [*,*,5,*,1]
-         * [*,4,*,2,*]
-         * [*,*,3,*,*]
-        */
-
-        for (int i = 0; i < this.emptySquares.length; i++) {
-            for (int j = 0; j < this.emptySquares[i].length; j++) {
-                if(this.emptySquares[i][j]) {
-                    generateSquare(i, j);
-                    for (int k = 0; k < neighborX.length; k++) {
-                        if (neighborX[k] + j >= 0 && neighborY[k] + i >= 0 && 
-                            neighborX[k] + j < this.emptySquares.length && neighborY[k] + i < this.emptySquares.length) {
-                            this.emptySquares[neighborY[k] + i][neighborX[k] + j] = false;
-                        }  
-                    }
-                    // since the above algorithm sets the next tile 
-                    //in the array to false we can skip over it
-                    j++;
-                }
-            }
-        }
-    }
-
-    private void generateSquare(int y, int x) {
-        double orientation = rand.nextDouble();
-        if (orientation <= tilingBias) {
-            generateTile(y + 1, x, Direction.DOWN);
-            generateTile(y , x + 1, Direction.UP);          
-        } else {
-            generateTile(y, x, Direction.LEFT);
-            generateTile(y + 1, x + 1, Direction.RIGHT);
-        }
-    }
-
-    private void generateTile(int y, int x, Direction direction) {
-        this.aztecDiamond.setTile(y, x, new Domino(direction, true));
-        if(animationMode) {
-            this.generatedTiles.setTile(y, x,  new Domino(direction, true));
-        }
+    private AztecDiamond expandedDiamond(){
+        int newWidth = this.aztecDiamond.getWidth() + 2 *  (2 * this.aztecDiamond.widthRate - 1);
+        int newHeight = this.aztecDiamond.getWidth() + 2 * (2 * this.aztecDiamond.heightRate - 1);
+        int newSize = this.aztecDiamond.getSize() + (2 *   (2 * this.aztecDiamond.expansionRate - 1));
+        this.iteration++;
+        AztecDiamond newDiamond = new AztecDiamond(newWidth, newHeight, newSize, aztecDiamond.getWidthRate(), aztecDiamond.getHeightRate(), this.iteration);
+        newDiamond.setUpTiles();
+        return newDiamond;
     }
 
     public void moveDominos() {
         removeOpposingTiles();
-        AztecDiamond newDiamond = new AztecDiamond(aztecDiamond.getWidth(),aztecDiamond.getHeight(),
-                                                   aztecDiamond.getWidthRate(),aztecDiamond.getHeightRate(),
-                                                   aztecDiamond.getIteration());
-        newDiamond.setEmpty(true);
-        newDiamond.expand();
+        AztecDiamond newDiamond = expandedDiamond();
         int expansionRate =  2 * newDiamond.getExpansionRate() - 1;
         Domino tile;
         for (int i = 0; i < aztecDiamond.getSize(); i++) {
@@ -153,7 +68,6 @@ public class DominoIteration {
                 }
             }
         }
-        newDiamond.setEmpty(false);
         this.aztecDiamond = newDiamond;
     }
 
@@ -217,6 +131,102 @@ public class DominoIteration {
             }
         }
     }
+
+    /*
+     * This function checks the tiles around the given cooridnates int the folloing
+     * fasion 
+     * [_] [_] [_] 
+     * [_] [X] [*] 
+     * [_] [*] [*]
+     * 
+     * and sets to false if any have neighbors
+     */
+    public void findEmptySquares() {
+        /* we subtract one because empty squares needs a space of 2 tiles
+         * the size of a tile at the end of the array is 1, so we subtract
+         *
+         * note: the indice of the square and tiles in the aztec diamond corralate in a somewhat 1-1 manner
+         */
+        boolean isEmpty;
+        this.emptySquares = new boolean[this.aztecDiamond.getSize() - 1][this.aztecDiamond.getSize() - 1];
+        for (int i = 0; i < this.emptySquares.length; i++) {
+            for (int j = 0; j < this.emptySquares[i].length; j++) {
+                // only when the tile isnt null may the tile be empty and  
+                // if the orientation of the tile is vertical, then the square my be valid
+                if(this.aztecDiamond.getTile(i, j) == null && aztecDiamond.getOrientation(i, j) == Orientation.VERTICAL) {
+                    isEmpty = true;
+                    if(!this.aztecDiamond.tileHasNeighbors(i, j)) {
+                        for (int k = 0; k < 2; k++) {
+                            for (int l = 0; l < 2; l++) {
+                                if (this.aztecDiamond.tileHasNeighbors(k + i, l + j) || 
+                                    this.aztecDiamond.getTile(k + i, l + j) != null) {
+                                    isEmpty = false;
+                                }
+                            }
+                        }
+                        this.emptySquares[i][j] = isEmpty;
+                    }
+                }
+            }
+        }
+    }   
+    // might change this algorithm later
+    public void fillEmptySquares() {
+        findEmptySquares();
+        if(this.animationMode) {
+            if(this.generatedTiles == null) {
+                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+            }
+            if(this.generatedTiles.getSize() != this.aztecDiamond.getSize()) {
+                this.generatedTiles = new AztecDiamond(this.aztecDiamond.getWidth(),this.aztecDiamond.getHeight());
+            }
+        }
+
+        int[] neighborX = {2,1,0,-1,0};
+        int[] neighborY = {0,1,2,1,0};
+        /* these arrays will access the neighbors in the following order
+         * [*,*,*,*,*]
+         * [*,*,*,*,*]
+         * [*,*,5,*,1]
+         * [*,4,*,2,*]
+         * [*,*,3,*,*]
+        */
+
+        for (int i = 0; i < this.emptySquares.length; i++) {
+            for (int j = 0; j < this.emptySquares[i].length; j++) {
+                if(this.emptySquares[i][j]) {
+                    generateSquare(i, j);
+                    for (int k = 0; k < neighborX.length; k++) {
+                        if (neighborX[k] + j >= 0 && neighborY[k] + i >= 0 && 
+                            neighborX[k] + j < this.emptySquares.length && neighborY[k] + i < this.emptySquares.length) {
+                            this.emptySquares[neighborY[k] + i][neighborX[k] + j] = false;
+                        }  
+                    }
+                    // since the above algorithm sets the next tile 
+                    //in the array to false we can skip over it
+                    j++;
+                }
+            }
+        }
+    }
+
+    private void generateSquare(int y, int x) {
+        double orientation = rand.nextDouble();
+        if (orientation <= tilingBias) {
+            generateTile(y + 1, x, Direction.DOWN);
+            generateTile(y , x + 1, Direction.UP);          
+        } else {
+            generateTile(y, x, Direction.LEFT);
+            generateTile(y + 1, x + 1, Direction.RIGHT);
+        }
+    }
+
+    private void generateTile(int y, int x, Direction direction) {
+        this.aztecDiamond.setTile(y, x, new Domino(direction, true));
+        if(animationMode) {
+            this.generatedTiles.setTile(y, x,  new Domino(direction, true));
+        }
+    }
     
     public String emptySquaresString() {
         StringBuffer buf = new StringBuffer();
@@ -252,11 +262,11 @@ public class DominoIteration {
         return emptySquares;
     }
     
-    public void setanimationMode(boolean animationMode) {
+    public void setAnimationMode(boolean animationMode) {
         this.animationMode = animationMode;
     }
     
-    public boolean isanimationMode() {
+    public boolean isAnimationMode() {
         return animationMode;
     }
 

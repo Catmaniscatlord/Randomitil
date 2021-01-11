@@ -11,24 +11,18 @@ public class AztecDiamond {
     private int width;
     private int height;
     private int size;
-    private int expansionRate;
-    private boolean empty;
-    private boolean forcedEmpty;
+    protected int expansionRate;
     
-    int iteration;
-    int widthRate;
-    int heightRate;
+    protected int iteration;
+    protected int widthRate;
+    protected int heightRate;
 
     public AztecDiamond() {
         this(2, 2);
     }
 
     public AztecDiamond(int width, int height) {
-        this(width, height, 1, 1);
-    }
-    
-    public AztecDiamond(int width, int height, int widthRate, int heightRate){
-        this(width, height, widthRate, heightRate, 0);
+        this(width, height, 1, 1, 0);
     }
 
     public AztecDiamond(int width, int height, int widthRate, int heightRate, int iteration){
@@ -38,8 +32,22 @@ public class AztecDiamond {
         this.iteration = iteration;
     }
 
+    public AztecDiamond(int width, int height, int size, int widthRate, int heightRate, int iteration){
+        createTiles(width, height, size);
+        setHeightRate(heightRate);
+        setWidthRate(widthRate);
+        this.iteration = iteration;
+    }
+
     private void createTiles(int width, int height) {
         this.size = Math.max(width, height);
+        this.tiles = new Domino[this.size][this.size];
+        this.width = width;
+        this.height = height;
+    }
+
+    private void createTiles(int width, int height, int size) {
+        this.size = size;
         this.tiles = new Domino[this.size][this.size];
         this.width = width;
         this.height = height;
@@ -147,38 +155,6 @@ public class AztecDiamond {
         }
     }
 
-    public void expand() {
-        int newSize = this.size + (2 * (2 * this.expansionRate - 1));
-        if(!isEmpty()) {
-            expandWidth(2 * this.expansionRate - 1, this.size, newSize);
-            expandHeight(2 * this.expansionRate - 1, this.size, newSize);
-        } 
-        else {
-            this.tiles = new Domino[newSize][newSize];
-        }
-        this.size = newSize;
-        this.width += 2 * (2 * this.widthRate - 1); 
-        this.height += 2 * (2 * this.heightRate - 1);
-        this.iteration++;
-        setUpTiles();
-    }
-
-    private void expandWidth(int expansionSize, int oldSize, int newSize) {
-        Domino[][] tempTiles = this.tiles.clone();
-        tiles = new Domino[oldSize][newSize];
-
-        for (int i = 0; i < oldSize; i++) {
-            System.arraycopy(tempTiles[i], 0, tiles[i], expansionSize, oldSize);
-        }
-    }
-
-    private void expandHeight(int expansionSize, int oldSize, int newSize) {
-        Domino[][] tempTiles = this.tiles.clone();
-        tiles = new Domino[newSize][newSize];
-
-        System.arraycopy(tempTiles, 0, tiles, expansionSize, oldSize);
-    }
-
     /*
      * This returns another AztecDiamond where all of the valid dominos are removed
      * dominos that are invalid will stay in the array
@@ -280,8 +256,6 @@ public class AztecDiamond {
     }
 
     public Boolean isEmpty() {
-        if(forcedEmpty)
-            return this.empty;
         Boolean isEmpty = true;
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
@@ -292,11 +266,6 @@ public class AztecDiamond {
             }
         }
         return isEmpty;
-    }
-
-    public void setEmpty(boolean empty) {
-        this.empty = empty;
-        this.forcedEmpty = true;
     }
 
     public Orientation getOrientation(int y, int x) {
@@ -362,7 +331,7 @@ public class AztecDiamond {
     public int getExpansionRate() {
         return expansionRate;
     }
-
+    
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
