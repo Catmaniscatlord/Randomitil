@@ -1,11 +1,14 @@
 // Package Declaration
-package randomitil.animation;
+package randomitil;
 
 // Imports
 import java.awt.EventQueue;
 import java.awt.GridLayout;
-import java.awt.event.*;
+
 import javax.swing.*;
+
+import randomitil.ui.*;
+import randomitil.animation.*;
 
 // Class Declaration
 public class DominoInterface extends JFrame {
@@ -13,9 +16,9 @@ public class DominoInterface extends JFrame {
     private static final long serialVersionUID = 3327828037218852291L;
 
     // Globals
-    public DominoDrawer drawer = null;
-    public DominoUI ui = null;
-    public JPanel mainPanel = null;
+    private DominoDrawer drawer = null;
+    private DominoUI ui = null;
+    private JPanel mainPanel = null;
 
     /// Constructor ///
     public DominoInterface(DominoDrawer drawer, DominoUI ui) {
@@ -40,7 +43,7 @@ public class DominoInterface extends JFrame {
         pack();
         setTitle("Random Domino Tiling");    
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     /// Setup Method ///

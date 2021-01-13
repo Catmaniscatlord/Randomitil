@@ -15,6 +15,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     private static final long serialVersionUID = 3337828037218852291L;
 
     // GUI Variables
+    boolean running = true;
     boolean animate = true;
     boolean colorChange = false;
     int animSpeed = 1;
@@ -116,7 +117,7 @@ public class DominoDrawer extends JPanel implements Runnable {
         beforeTime = System.currentTimeMillis();
 
         // Running Loop
-        while(true) {
+        while(running) {
             // Advance to next frame
             nextFrame();
 
@@ -425,8 +426,8 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Direction Colors ///
-    public Color[] getDirColors() {
-        return this.dirColors;
+    public Color getDirColor(int index) {
+        return this.dirColors[index];
     }
 
     /// Outline Color ///

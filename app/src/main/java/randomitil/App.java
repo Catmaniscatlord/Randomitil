@@ -1,8 +1,7 @@
 package randomitil;
 
-import java.util.Arrays;
-
 import randomitil.animation.*;
+import randomitil.ui.*;
 
 public class App {
     public static void main(String[] args) {
