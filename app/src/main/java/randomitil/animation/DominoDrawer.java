@@ -37,6 +37,8 @@ public class DominoDrawer extends JPanel implements Runnable {
     int colorIndex = 0;
     Color[] dirColors = new Color[4];
     Color[] useColors = new Color[4];
+    Color outlineColor = Color.BLACK;
+    Color backColor = new Color(240, 240, 240);
 
     int boardWidth = 2;
     int boardHeight = 2;
@@ -48,7 +50,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Constructor ///
     public DominoDrawer() {
         // Setup Background
-        setBackground(new Color(245, 245, 245));
+        setBackground(backColor);
         setPreferredSize(new Dimension(400, 600));
 
         // Event Listener
@@ -167,16 +169,12 @@ public class DominoDrawer extends JPanel implements Runnable {
         double scale = ((double) paintSize / boardSize) / cellSize;
 
         // Draw Bounding Box
+        g.setColor(outlineColor);
         g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
 
         // Transform
         g2.translate((int) Math.round((cellSize * scale) / 2) + borderOffset + paintXOffset, (int) Math.round(paintSize / 2) + borderOffset + paintYOffset);
         g2.scale(scale, scale);
-
-        if (scale > 0.005) {
-            // Draw grid
-            drawGrid(g2);
-        }
 
         // Drawing Dominoes
         drawDominoes(g2, scale);
@@ -230,7 +228,7 @@ public class DominoDrawer extends JPanel implements Runnable {
                 if (dom != null && dom.isPlaceable()) {
                     // Calculate coordinates
                     coords[0] = i * cellStep + j * cellStep;
-                    coords[1] =  i * cellStep - j * cellStep;
+                    coords[1] = i * cellStep - j * cellStep;
 
                     // Change drawing based on direction
                     switch(dom.getDirection()) {
@@ -241,7 +239,7 @@ public class DominoDrawer extends JPanel implements Runnable {
                             
                             // Outline
                             if (scale >= 0.025) {
-                                g2D.setColor(Color.BLACK);
+                                g2D.setColor(outlineColor);
                                 g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             }
                             break;
@@ -253,7 +251,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                             // Outline
                             if (scale >= 0.025) {
-                                g2D.setColor(Color.BLACK);
+                                g2D.setColor(outlineColor);
                                 g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             }
                             break;
@@ -265,7 +263,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                             // Outline
                             if (scale >= 0.025) {
-                                g2D.setColor(Color.BLACK);
+                                g2D.setColor(outlineColor);
                                 g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
                             }
                             break;
@@ -277,7 +275,7 @@ public class DominoDrawer extends JPanel implements Runnable {
 
                             // Outline
                             if (scale >= 0.025) {
-                                g2D.setColor(Color.BLACK);
+                                g2D.setColor(outlineColor);
                                 g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
                             }
                             break;
@@ -286,41 +284,6 @@ public class DominoDrawer extends JPanel implements Runnable {
                     // Skip over Null Domino
                     j++;
                 }
-            }
-        }
-    }
-
-    /// Grid Drawing Method ///
-    public void drawGrid(Graphics2D g2D) {
-        // Setup Variables
-        Domino dom = null;
-        int[] coords = new int[2];
-        int cellStep = (int) Math.round(cellSize / 2);
-        g2D.setColor(Color.BLACK);
-
-        // Draw Squares
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                // Retrive Domino
-                dom = mainTiles.getTile(i, j);
-
-                if (dom == null) {
-                    // Calculate coordinates
-                    coords[0] = i * cellStep + j * cellStep;
-                    coords[1] =  i * cellStep - j * cellStep;
-
-                    // Draw Square Outlines
-                    if (mainTiles.getOrientation(i, j) == Orientation.HORIZONTAL) {
-                        g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                    } else {
-                        g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-                    }
-                }
-            }
-            
-            // Skip some rows
-            if (i % 2 == 0 && i < boardSize - 2) {
-                i++;
             }
         }
     }
@@ -405,11 +368,13 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Direction Colors ///
-    public void setDirColors(Color uColor, Color rColor, Color dColor, Color lColor) {
-        this.dirColors[0] = uColor;
-        this.dirColors[1] = rColor;
-        this.dirColors[2] = dColor;
-        this.dirColors[3] = lColor;
+    public void setDirColor(Color newColor, int index) {
+        this.dirColors[index] = newColor;
+    }
+
+    /// Outline Color ///
+    public void setOutlineColor(Color newColor) {
+        this.outlineColor = newColor;
     }
 
     /// Anim Speed ///
@@ -462,6 +427,11 @@ public class DominoDrawer extends JPanel implements Runnable {
     /// Direction Colors ///
     public Color[] getDirColors() {
         return this.dirColors;
+    }
+
+    /// Outline Color ///
+    public Color getOutlineColor() {
+        return this.outlineColor;
     }
 
     /// Anim Speed ///

@@ -25,7 +25,7 @@ public class App {
             System.out.println("new tiles");
             System.out.println(kevin.getAztecDiamond());
         
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 20; i++) {
                 kevin.moveDominos();
                 kevin.fillEmptySquares();        
             }
