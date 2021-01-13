@@ -28,22 +28,7 @@ public abstract class TilingIteration{
    
     abstract public void iterateTiles();
 
-    public String blankSpacesString() {
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < this.blankSpaces.length; i++) {
-            buf.append('[');
-            for (int j = 0; j < this.blankSpaces[i].length; j++) {
-                if(this.blankSpaces[i][j])
-                    buf.append("*");
-                else
-                    buf.append("_");
-                if (j != this.blankSpaces[i].length - 1)
-                    buf.append(",");
-            }
-            buf.append("]\n");
-        }
-        return buf.toString();
-    }
+    abstract public String blankSpacesString();
 
     public void setTiling(Tilings tiling) {
         this.tiling = tiling;
@@ -84,5 +69,9 @@ public abstract class TilingIteration{
 
     public Tilings getGeneratedTiles() {
         return generatedTiles;
+    }
+
+    public boolean[][] getBlankSpaces() {
+        return blankSpaces;
     }
 }
