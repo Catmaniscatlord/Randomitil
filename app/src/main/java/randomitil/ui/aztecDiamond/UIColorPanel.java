@@ -1,5 +1,5 @@
 // Package Declaration
-package randomitil.ui;
+package randomitil.ui.aztecDiamond;
 
 // Imports
 import java.awt.*;
@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import randomitil.animation.*;
+import randomitil.ui.UIColorChooser;
 
 // Class Declaration
 public class UIColorPanel extends JPanel {

@@ -7,7 +7,7 @@ import java.awt.GridLayout;
 
 import javax.swing.*;
 
-import randomitil.ui.*;
+import randomitil.ui.aztecDiamond.DiamondUI;
 import randomitil.animation.*;
 
 // Class Declaration

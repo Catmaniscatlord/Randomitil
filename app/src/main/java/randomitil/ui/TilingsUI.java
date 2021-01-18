@@ -15,8 +15,8 @@ public class TilingsUI extends JPanel {
     private static final long serialVersionUID = 3327828037218852291L;
 
     // Class Objects
-    TilingsDrawer drawer;
-    EtchedBorder uiBorder;
+    protected TilingsDrawer drawer;
+    protected EtchedBorder uiBorder;
     
     /// Constructor ///
     public TilingsUI(TilingsDrawer drawer) {

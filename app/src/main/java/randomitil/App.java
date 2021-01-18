@@ -2,7 +2,7 @@ package randomitil;
 
 import randomitil.animation.*;
 import randomitil.tilings.aztecDiamond.*;
-import randomitil.ui.*;
+import randomitil.ui.aztecDiamond.DiamondUI;
 
 public class App {
     public static void main(String[] args) {

@@ -1,8 +1,9 @@
 // Package Declaration
-package randomitil.ui;
+package randomitil.ui.aztecDiamond;
 
 // Imports
 import randomitil.animation.*;
+import randomitil.ui.*;
 
 // Class Declaration
 public class DiamondUI extends TilingsUI {

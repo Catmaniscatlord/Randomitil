@@ -1,5 +1,5 @@
 // Package Declaration
-package randomitil.ui;
+package randomitil.ui.aztecDiamond;
 
 // Imports
 import java.awt.*;
