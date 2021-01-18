@@ -16,10 +16,10 @@ public class UIColorChangePanel extends JPanel {
     private static final long serialVersionUID = 3337828037218852291L;
     
     // Class Objects
-    DominoDrawer drawer;
+    TilingsDrawer drawer;
     
     /// Constructor ///
-    public UIColorChangePanel(DominoDrawer drawer, Border border) {
+    public UIColorChangePanel(TilingsDrawer drawer, Border border) {
         // Setup Border
         this.setBorder(BorderFactory.createTitledBorder(border, "Color Rotation", TitledBorder.LEFT, TitledBorder.TOP));
         
@@ -55,7 +55,8 @@ public class UIColorChangePanel extends JPanel {
 
         ActionListener colorStopButtonListener = actionEvent -> {
 		    // Stop Color Changing
-		    colorChangeToggle.setSelected(false);
+            colorChangeToggle.setSelected(false);
+            clockwiseToggle.setEnabled(true);
 		    drawer.stopColorChange();
 		};
 

@@ -4,13 +4,10 @@ package randomitil.animation;
 // Imports
 import java.awt.*;
 import javax.swing.*;
-import randomitil.*;
-import java.lang.Runnable;
-import java.lang.Math;
 import java.awt.event.*;
 
 // Class Declaration
-public class DominoDrawer extends JPanel implements Runnable {
+public class TilingsDrawer extends JPanel implements Runnable {
     // Serialization
     private static final long serialVersionUID = 3337828037218852291L;
 
@@ -36,8 +33,9 @@ public class DominoDrawer extends JPanel implements Runnable {
     double colorPhase = 0;
     int colorStep = -1;
     int colorIndex = 0;
-    Color[] dirColors = new Color[4];
-    Color[] useColors = new Color[4];
+    int numColors;
+    Color[] dirColors;
+    Color[] useColors;
     Color outlineColor = Color.BLACK;
     Color backColor = new Color(240, 240, 240);
 
@@ -45,11 +43,9 @@ public class DominoDrawer extends JPanel implements Runnable {
     int boardHeight = 2;
     int boardSize = -1;
     int finalSize = 4;
-    AztecDiamond mainTiles;
-    DominoIteration calc;
 
     /// Constructor ///
-    public DominoDrawer() {
+    public TilingsDrawer(int numColors) {
         // Setup Background
         setBackground(backColor);
         setPreferredSize(new Dimension(400, 600));
@@ -57,11 +53,10 @@ public class DominoDrawer extends JPanel implements Runnable {
         // Event Listener
         setupListeners();
 
-        // Set Color Coding
-        dirColors[0] = new Color(0, 0, 255);    // UP Color
-        dirColors[1] = new Color(255, 0, 0);    // RIGHT Color
-        dirColors[2] = new Color(255, 255, 0);  // DOWN Color
-        dirColors[3] = new Color(0, 255, 0);    // LEFT Color
+        // Setup empty Color arrays
+        this.numColors = numColors;
+        this.dirColors = new Color[this.numColors];
+        this.useColors = new Color[this.numColors];
     }
 
     /// Setup Event Listener ///
@@ -69,10 +64,10 @@ public class DominoDrawer extends JPanel implements Runnable {
         // Setup Resize Event Calculations
         class DrawingListener implements ComponentListener {
                 // Variables
-                DominoDrawer panel;
+                TilingsDrawer panel;
                 
                 /// Constructor ///
-                public DrawingListener(DominoDrawer panel) {
+                public DrawingListener(TilingsDrawer panel) {
                     this.panel = panel;
                 }
                 
@@ -84,30 +79,21 @@ public class DominoDrawer extends JPanel implements Runnable {
             
                 /// Shown Event ///
                 public void componentMoved(ComponentEvent e) {
+                    //
                 }
 
                 /// Shown Event ///
                 public void componentShown(ComponentEvent e) {
+                    //
                 }
 
                 /// Shown Event ///
                 public void componentHidden(ComponentEvent e) {
+                    //
                 }
         }
 
         this.addComponentListener(new DrawingListener(this));
-    }
-
-    /// Update Diamond ///
-    public void updateDiamond(AztecDiamond mainTiles, DominoIteration calc, int newSize) {
-        // Update diamond
-        this.mainTiles = mainTiles;
-
-        // Update domino iteration calculater
-        this.calc = calc;
-
-        // Update Size
-        this.boardSize = newSize;
     }
 
     /// Run Method ///
@@ -148,6 +134,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Initialization Work ///
+    @Override
     public void addNotify() {
         // Super Method
         super.addNotify();
@@ -161,6 +148,7 @@ public class DominoDrawer extends JPanel implements Runnable {
     }
 
     /// Paint Method ///
+    @Override
     public void paintComponent(Graphics g) {
         // Call Super Method
         super.paintComponent(g);
@@ -174,11 +162,11 @@ public class DominoDrawer extends JPanel implements Runnable {
         g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
 
         // Transform
-        g2.translate((int) Math.round((cellSize * scale) / 2) + borderOffset + paintXOffset, (int) Math.round(paintSize / 2) + borderOffset + paintYOffset);
+        g2.translate((int) Math.round((cellSize * scale) / 2) + borderOffset + paintXOffset, (int) Math.round(paintSize / 2.0) + borderOffset + paintYOffset);
         g2.scale(scale, scale);
 
         // Drawing Dominoes
-        drawDominoes(g2, scale);
+        drawTiling(g2, scale);
 
         // Resync drawing
         Toolkit.getDefaultToolkit().sync();
@@ -206,87 +194,9 @@ public class DominoDrawer extends JPanel implements Runnable {
         }
     }
 
-    /// Domino Drawing Method ///
-    public void drawDominoes(Graphics2D g2D, double scale) {
-        // Setup Variables
-        Domino dom = null;
-        int[] coords = new int[2];
-        int cellStep = (int) Math.round(cellSize / 2);
-
-        // Phase Colors
-        useColors[0] = getPhaseColor(0);
-        useColors[1] = getPhaseColor(1);
-        useColors[2] = getPhaseColor(2);
-        useColors[3] = getPhaseColor(3);
-
-        // Iterate through Diamond Matrix
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                // Retrive Domino
-                dom = mainTiles.getTile(i, j);
-
-                // Draw Placeable Dominoes
-                if (dom != null && dom.isPlaceable()) {
-                    // Calculate coordinates
-                    coords[0] = i * cellStep + j * cellStep;
-                    coords[1] = i * cellStep - j * cellStep;
-
-                    // Change drawing based on direction
-                    switch(dom.getDirection()) {
-                        case UP: 
-                            // Fill
-                            g2D.setColor(useColors[0]);
-                            g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            
-                            // Outline
-                            if (scale >= 0.025) {
-                                g2D.setColor(outlineColor);
-                                g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            }
-                            break;
-
-                        case RIGHT: 
-                            // Fill
-                            g2D.setColor(useColors[1]);
-                            g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-
-                            // Outline
-                            if (scale >= 0.025) {
-                                g2D.setColor(outlineColor);
-                                g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-                            }
-                            break;
-
-                        case DOWN: 
-                            // Fill
-                            g2D.setColor(useColors[2]);
-                            g2D.fillRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-
-                            // Outline
-                            if (scale >= 0.025) {
-                                g2D.setColor(outlineColor);
-                                g2D.drawRect(coords[0] - cellSize, coords[1] - cellSize / 2, cellSize * 2, cellSize);
-                            }
-                            break;
-
-                        case LEFT: 
-                            // Fill
-                            g2D.setColor(useColors[3]);
-                            g2D.fillRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-
-                            // Outline
-                            if (scale >= 0.025) {
-                                g2D.setColor(outlineColor);
-                                g2D.drawRect(coords[0] - cellSize / 2, coords[1] - cellSize, cellSize, cellSize * 2);
-                            }
-                            break;
-                    }
-                
-                    // Skip over Null Domino
-                    j++;
-                }
-            }
-        }
+    /// Tilings Drawing Method ///
+    public void drawTiling(Graphics2D g2D, double scale) {
+        // Filled by subclass drawer
     }
 
     /// Wrap values Method ///
@@ -347,8 +257,8 @@ public class DominoDrawer extends JPanel implements Runnable {
         paintSize = (int) Math.round(displaySize * 0.8);
         borderOffset = (int) Math.round(paintSize / 8.0);
 
-        paintXOffset = (int) Math.max(0, (width - displaySize) / 2);
-        paintYOffset = (int) Math.max(0, (height - displaySize) / 2);
+        paintXOffset = Math.max(0, (width - displaySize) / 2);
+        paintYOffset = Math.max(0, (height - displaySize) / 2);
 
         cellSize = (int) Math.round(paintSize / 2.0);
     }

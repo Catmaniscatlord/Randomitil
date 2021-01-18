@@ -16,10 +16,10 @@ public class UIGenPanel extends JPanel {
     private static final long serialVersionUID = 3337828037218852291L;
     
     // Class Objects
-    DominoDrawer drawer;
+    TilingsDrawer drawer;
     
     /// Constructor ///
-    public UIGenPanel(DominoDrawer drawer, Border border) {
+    public UIGenPanel(TilingsDrawer drawer, Border border) {
         // Setup Border
         this.setBorder(BorderFactory.createTitledBorder(border, "Generation", TitledBorder.LEFT, TitledBorder.TOP));
         

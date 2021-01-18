@@ -17,7 +17,7 @@ public class UIColorPanel extends JPanel {
     private static final long serialVersionUID = 3337828037218852291L;
     
     // Class Objects
-    DominoDrawer drawer;
+    TilingsDrawer drawer;
     UIColorPanel panel;
 
     JColorChooser colorChooser;
@@ -52,7 +52,7 @@ public class UIColorPanel extends JPanel {
     CancelListener cancelListener;
 
     /// Constructor ///
-    public UIColorPanel(DominoDrawer drawer, Border border) {
+    public UIColorPanel(TilingsDrawer drawer, Border border) {
         // Setup Border
         this.setBorder(BorderFactory.createTitledBorder(border, "Colors", TitledBorder.LEFT, TitledBorder.TOP));
         

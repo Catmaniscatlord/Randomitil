@@ -17,11 +17,12 @@ public class DiamondTilings extends Tilings{
     
     public void createTiles(int size) {
         this.tiles = new Tile[size][size];
+        this.size = size;
     }
 
     @Override
     public void setUpTiles() {
-        
+        //
     }
     
     @Override

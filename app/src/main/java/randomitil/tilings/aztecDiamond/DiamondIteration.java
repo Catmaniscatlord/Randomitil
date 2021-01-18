@@ -14,6 +14,7 @@ public class DiamondIteration extends TilingIteration {
 
     public DiamondIteration(DiamondTilings tiling) {
         super(tiling);
+        this.expansionRate = 1;
     }
 
     /* Override this function on creation

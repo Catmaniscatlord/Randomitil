@@ -11,17 +11,17 @@ import randomitil.ui.*;
 import randomitil.animation.*;
 
 // Class Declaration
-public class DominoInterface extends JFrame {
+public class DiamondInterface extends JFrame {
     // Serialization
     private static final long serialVersionUID = 3327828037218852291L;
 
     // Globals
-    private DominoDrawer drawer = null;
-    private DominoUI ui = null;
+    private DiamondDrawer drawer = null;
+    private DiamondUI ui = null;
     private JPanel mainPanel = null;
 
     /// Constructor ///
-    public DominoInterface(DominoDrawer drawer, DominoUI ui) {
+    public DiamondInterface(DiamondDrawer drawer, DiamondUI ui) {
         // Initialize GUI Components
         this.drawer = drawer;
         this.ui = ui;
@@ -47,10 +47,10 @@ public class DominoInterface extends JFrame {
     }
 
     /// Setup Method ///
-    public static void setup(DominoDrawer drawer, DominoUI ui) {
+    public static void setup(DiamondDrawer drawer, DiamondUI ui) {
         EventQueue.invokeLater(() -> {
             // Create Self
-            JFrame ex = new DominoInterface(drawer, ui);
+            JFrame ex = new DiamondInterface(drawer, ui);
 
             // Set Visibility
             ex.setVisible(true);

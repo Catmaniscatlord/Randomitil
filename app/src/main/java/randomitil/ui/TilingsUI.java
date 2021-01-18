@@ -10,16 +10,16 @@ import javax.swing.border.*;
 import randomitil.animation.*;
 
 // Class Declaration
-public class DominoUI extends JPanel {
+public class TilingsUI extends JPanel {
     // Serialization
     private static final long serialVersionUID = 3327828037218852291L;
 
     // Class Objects
-    DominoDrawer drawer;
+    TilingsDrawer drawer;
     EtchedBorder uiBorder;
     
     /// Constructor ///
-    public DominoUI(DominoDrawer drawer) {
+    public TilingsUI(TilingsDrawer drawer) {
         // Setup Background
         setBackground(new Color (240, 240, 240));
         setPreferredSize(new Dimension(300, 300));
@@ -34,8 +34,11 @@ public class DominoUI extends JPanel {
         this.drawer = drawer;
 
         // Add Control Panels
-        this.add(new UIGenPanel(drawer, uiBorder));
-        this.add(new UIColorPanel(drawer, uiBorder));
-        this.add(new UIColorChangePanel(drawer, uiBorder));
+        this.addControlPanels();
+    }
+
+    /// Add Control Panels ///
+    public void addControlPanels() {
+        // Subclass Fill in Options
     }
 }
