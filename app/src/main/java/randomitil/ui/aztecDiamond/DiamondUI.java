@@ -19,7 +19,7 @@ public class DiamondUI extends TilingsUI {
     @Override
     public void addControlPanels() {
         // Add Control Panels
-        this.add(new UIGenPanel(drawer, this.uiBorder));
+        this.add(new UIGenPanel((DiamondDrawer) drawer, this.uiBorder));
         this.add(new UIColorPanel(drawer, this.uiBorder));
         this.add(new UIColorChangePanel(drawer, this.uiBorder));
     }
