@@ -12,40 +12,38 @@ public class TilingsDrawer extends JPanel implements Runnable {
     private static final long serialVersionUID = 3337828037218852291L;
 
     // GUI Variables
-    boolean running = true;
-    boolean animate = true;
-    boolean colorChange = false;
-    int animSpeed = 1;
-    int frameNum = 0;
+    protected boolean running = true;
+    protected boolean animate = false;
+    protected boolean colorChange = false;
+    protected int animSpeed = 1;
+    protected int frameNum = 0;
     
     // Animation Variables
-    Thread animThread;
-    final int FPS = 60;
-    final int DELAY = (int) Math.round(1000.0 / FPS);
+    private Thread animThread;
+    private final int FPS = 60;
+    private final int DELAY = (int) Math.round(1000.0 / FPS);
 
-    int displaySize = 500;
-    int paintSize = 400;
-    int paintXOffset = 0;
-    int paintYOffset = 0;
-    int borderOffset = 50;
-    int cellSize = (int) Math.round(paintSize / 2.0);
+    private int displaySize = 500;
+    protected int paintSize = 400;
+    private int paintXOffset = 0;
+    private int paintYOffset = 0;
+    private int borderOffset = 50;
+    protected int cellSize = (int) Math.round(paintSize / 2.0);
 
-    double colorPhase = 0;
-    int colorStep = -1;
-    int colorIndex = 0;
-    int numColors;
-    Color[] dirColors;
-    Color[] useColors;
-    Color outlineColor = Color.BLACK;
-    Color backColor = new Color(240, 240, 240);
+    private double colorPhase = 0;
+    private int colorStep = -1;
+    private int colorIndex = 0;
+    private int numColors;
+    private Color[] dirColors;
+    protected Color[] useColors;
+    protected Color outlineColor = Color.BLACK;
+    private Color backColor = new Color(240, 240, 240);
 
-    int boardWidth = 2;
-    int boardHeight = 2;
-    int boardSize = -1;
-    int finalSize = 4;
+    protected int prevSize = -1;
+    protected int boardSize = -1;
 
     /// Constructor ///
-    public TilingsDrawer(int numColors) {
+    protected TilingsDrawer(int numColors) {
         // Setup Background
         setBackground(backColor);
         setPreferredSize(new Dimension(400, 600));
@@ -60,7 +58,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Setup Event Listener ///
-    public void setupListeners() {
+    private void setupListeners() {
         // Setup Resize Event Calculations
         class DrawingListener implements ComponentListener {
                 // Variables
@@ -155,14 +153,15 @@ public class TilingsDrawer extends JPanel implements Runnable {
         
         // Setup Drawing
         Graphics2D g2 = (Graphics2D) g;
-        double scale = ((double) paintSize / boardSize) / cellSize;
+        double scale = getScale();
 
         // Draw Bounding Box
         g.setColor(outlineColor);
         g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
 
         // Transform
-        g2.translate((int) Math.round((cellSize * scale) / 2) + borderOffset + paintXOffset, (int) Math.round(paintSize / 2.0) + borderOffset + paintYOffset);
+        g2.translate(borderOffset + paintXOffset, borderOffset + paintYOffset);
+        setBoardTranslate(g2, scale);
         g2.scale(scale, scale);
 
         // Drawing Dominoes
@@ -172,13 +171,19 @@ public class TilingsDrawer extends JPanel implements Runnable {
         Toolkit.getDefaultToolkit().sync();
     }
 
+    /// Transform Method ///
+    protected void setBoardTranslate(Graphics2D g2D, double scale) {
+        // Override
+    }
+
     /// Update Method ///
-    public void nextFrame() {
+    private void nextFrame() {
         // Change Frame
         if (frameNum < FPS) {
             frameNum += animSpeed;
         } else {
             frameNum = 0;
+            animate = false;
         }
 
         // Change Color Phase
@@ -195,7 +200,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Tilings Drawing Method ///
-    public void drawTiling(Graphics2D g2D, double scale) {
+    protected void drawTiling(Graphics2D g2D, double scale) {
         // Filled by subclass drawer
     }
 
@@ -213,7 +218,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Color Changing Method ///
-    public Color getPhaseColor(int index) {
+    protected Color getPhaseColor(int index) {
         // adjust phase & index
         double phase = colorPhase % FPS;
         index = wrapVal(colorIndex + index, 0, 3);
@@ -268,6 +273,11 @@ public class TilingsDrawer extends JPanel implements Runnable {
         this.animate = animate;
     }
 
+    /// Animate? ///
+    public void setFrameNum(int frameNum) {
+        this.frameNum = frameNum;
+    }
+
     /// Color Change? ///
     public void setColorChange(boolean colorChange) {
         this.colorChange = colorChange;
@@ -294,23 +304,9 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Board Size ///
-    public void setBoardSize(int boardSize) {
-        this.boardSize = boardSize;
-    }
-
-    /// Board Width ///
-    public void setBoardWidth(int boardWidth) {
-        this.boardWidth = boardWidth;
-    }
-
-    /// Board Height ///
-    public void setBoardHeight(int boardHeight) {
-        this.boardHeight = boardHeight;
-    }
-
-    /// final Size ///
-    public void setFinalSize(int finalSize) {
-        this.finalSize = finalSize;
+    public void setBoardSize(int newSize) {
+        this.prevSize = this.boardSize;
+        this.boardSize = newSize;
     }
 
     /// Getter Methods ///---------------------------------------------------------
@@ -355,18 +351,23 @@ public class TilingsDrawer extends JPanel implements Runnable {
         return this.boardSize;
     }
 
-    /// Board Width ///
-    public int getBoardWidth() {
-        return this.boardWidth;
+    /// Scaling Factor ///
+    public double getScale() {
+        // catch nonanimation
+        if (!animate) {
+            return ((double) paintSize / boardSize) / cellSize;
+        }
+        
+        // Calculate Scales
+        double oldScale = ((double) paintSize / prevSize) / cellSize;
+        double newScale = ((double) paintSize / boardSize) / cellSize;
+
+        // Return Tweened Scale
+        return oldScale + (newScale - oldScale) * getTweenFactor();
     }
 
-    /// Board Height ///
-    public int getBoardHeight() {
-        return this.boardHeight;
-    }
-
-    /// final Size ///
-    public int getFinalSize() {
-        return this.finalSize;
+    /// Tweening Factor ///
+    public double getTweenFactor() {
+        return (double) frameNum /  FPS;
     }
 }
