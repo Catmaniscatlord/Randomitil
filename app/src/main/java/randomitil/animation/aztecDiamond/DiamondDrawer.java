@@ -59,7 +59,7 @@ public class DiamondDrawer extends TilingsDrawer {
         newCoords[1] = i * cellStep - j * cellStep;
 
         // Tween Movement
-        if (this.getAnimate()) {
+        if (this.isAnimate()) {
             int tweenStep = (int) Math.floor(cellSize * getTweenFactor());
 
             switch((DominoDirection) dom.getDirection()) {
