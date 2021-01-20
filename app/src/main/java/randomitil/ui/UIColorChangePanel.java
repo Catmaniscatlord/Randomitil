@@ -31,17 +31,17 @@ public class UIColorChangePanel extends JPanel {
         JToggleButton clockwiseToggle = new JToggleButton("Clockwise", true);
         JButton colorStopButton = new JButton("Reset Rotation");
 
-        // Button Listeners
-        ActionListener colorChangeToggleListener = actionEvent -> {
+        // Add Button Listeners
+        colorChangeToggle.addActionListener(e -> {
 		    // Get input value
 		    boolean selected = colorChangeToggle.isSelected();
 
 		    // Change Variables
 		    drawer.setColorChange(selected);
 		    clockwiseToggle.setEnabled(!selected);
-		};
+		});
 
-        ActionListener clockwiseToggleListener = actionEvent -> {
+        clockwiseToggle.addActionListener(e -> {
 		    // Get input value
 		    boolean selected = clockwiseToggle.isSelected();
 
@@ -51,19 +51,14 @@ public class UIColorChangePanel extends JPanel {
 		    } else {
 		        drawer.setColorStep(1);
 		    }
-		};
+		});
 
-        ActionListener colorStopButtonListener = actionEvent -> {
+        colorStopButton.addActionListener(e -> {
 		    // Stop Color Changing
             colorChangeToggle.setSelected(false);
             clockwiseToggle.setEnabled(true);
 		    drawer.stopColorChange();
-		};
-
-        // Adding Listeners to Buttons
-        colorChangeToggle.addActionListener(colorChangeToggleListener);
-        clockwiseToggle.addActionListener(clockwiseToggleListener);
-        colorStopButton.addActionListener(colorStopButtonListener);
+		});
 
         // Add Buttons to Panel
         this.add(colorChangeToggle);

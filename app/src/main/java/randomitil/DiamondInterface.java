@@ -8,7 +8,7 @@ import java.awt.GridLayout;
 import javax.swing.*;
 
 import randomitil.ui.aztecDiamond.DiamondUI;
-import randomitil.animation.*;
+import randomitil.animation.aztecDiamond.*;
 
 // Class Declaration
 public class DiamondInterface extends JFrame {
@@ -21,7 +21,7 @@ public class DiamondInterface extends JFrame {
     private JPanel mainPanel = null;
 
     /// Constructor ///
-    public DiamondInterface(DiamondDrawer drawer, DiamondUI ui) {
+    private DiamondInterface(DiamondDrawer drawer, DiamondUI ui) {
         // Initialize GUI Components
         this.drawer = drawer;
         this.ui = ui;

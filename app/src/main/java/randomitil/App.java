@@ -1,6 +1,6 @@
 package randomitil;
 
-import randomitil.animation.*;
+import randomitil.animation.aztecDiamond.*;
 import randomitil.ui.aztecDiamond.DiamondUI;
 
 public class App {

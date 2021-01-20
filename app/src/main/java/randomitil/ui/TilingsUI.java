@@ -38,7 +38,7 @@ public class TilingsUI extends JPanel {
     }
 
     /// Add Control Panels ///
-    public void addControlPanels() {
+    protected void addControlPanels() {
         // Subclass Fill in Options
     }
 }
