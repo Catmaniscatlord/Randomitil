@@ -13,19 +13,19 @@ import randomitil.animation.*;
 import randomitil.ui.UIColorChooser;
 
 // Class Declaration
-public class UIColorPanel extends JPanel {
+public class UIDiamondColorPanel extends JPanel {
     // Serialization
     private static final long serialVersionUID = 3337828037218852291L;
     
     // Class Objects
     TilingsDrawer drawer;
-    UIColorPanel panel;
+    UIDiamondColorPanel panel;
 
     JColorChooser colorChooser;
     JDialog colorDialog;
     
     // CancelListener Class
-    public class CancelListener implements ActionListener, Serializable {
+    private class CancelListener implements ActionListener, Serializable {
         // Serialization
         private static final long serialVersionUID = 3337828037218852291L;
 
@@ -53,7 +53,7 @@ public class UIColorPanel extends JPanel {
     CancelListener cancelListener;
 
     /// Constructor ///
-    public UIColorPanel(TilingsDrawer drawer, Border border) {
+    public UIDiamondColorPanel(TilingsDrawer drawer, Border border) {
         // Setup Border
         this.setBorder(BorderFactory.createTitledBorder(border, "Colors", TitledBorder.LEFT, TitledBorder.TOP));
         
@@ -77,8 +77,8 @@ public class UIColorPanel extends JPanel {
         // Setup Cancel Listener
         this.cancelListener = new CancelListener(this.colorChooser);
 
-        // Button Listeners
-        ActionListener outlineColorButtonListener = actionEvent -> {
+        // Add Button Listeners
+        outlineColorButton.addActionListener(e -> {
 		    // Get input value
 		    Color c = panel.createColorDialog(drawer.getOutlineColor());
 
@@ -86,9 +86,9 @@ public class UIColorPanel extends JPanel {
 		    if (c != null) {
 		        drawer.setOutlineColor(c);
 		    }
-		};
+		});
 
-        ActionListener backColorButtonListener = actionEvent -> {
+        backColorButton.addActionListener(e -> {
 		    // Get input value
 		    Color c = panel.createColorDialog(drawer.getBackground());
 
@@ -96,9 +96,9 @@ public class UIColorPanel extends JPanel {
 		    if (c != null) {
 		        drawer.setBackground(c);
 		    }
-		};
+		});
 
-        ActionListener uColorButtonListener = actionEvent -> {
+        uColorButton.addActionListener(e -> {
 		    // Get input value
 		    Color c = panel.createColorDialog(drawer.getDirColor(0));
 
@@ -106,9 +106,9 @@ public class UIColorPanel extends JPanel {
 		    if (c != null) {
 		        drawer.setDirColor(c, 0);
 		    }
-		};
+		});
 
-        ActionListener rColorButtonListener = actionEvent -> {
+        rColorButton.addActionListener(e -> {
 		    // Get input value
 		    Color c = panel.createColorDialog(drawer.getDirColor(1));
 
@@ -116,9 +116,9 @@ public class UIColorPanel extends JPanel {
 		    if (c != null) {
 		        drawer.setDirColor(c, 1);
 		    }
-		};
+		});
 
-        ActionListener dColorButtonListener = actionEvent -> {
+        dColorButton.addActionListener(e -> {
 		    // Get input value
 		    Color c = panel.createColorDialog(drawer.getDirColor(2));
 
@@ -126,9 +126,9 @@ public class UIColorPanel extends JPanel {
 		    if (c != null) {
 		        drawer.setDirColor(c, 2);
 		    }
-		};
+		});
 
-        ActionListener lColorButtonListener = actionEvent -> {
+        lColorButton.addActionListener(e -> {
 		    // Get input value
 		    Color c = panel.createColorDialog(drawer.getDirColor(3));
 
@@ -136,15 +136,7 @@ public class UIColorPanel extends JPanel {
 		    if (c != null) {
 		        drawer.setDirColor(c, 3);
 		    }
-		};
-
-        // Adding Listeners to Buttons
-        outlineColorButton.addActionListener(outlineColorButtonListener);
-        backColorButton.addActionListener(backColorButtonListener);
-        uColorButton.addActionListener(uColorButtonListener);
-        rColorButton.addActionListener(rColorButtonListener);
-        dColorButton.addActionListener(dColorButtonListener);
-        lColorButton.addActionListener(lColorButtonListener);
+		});
 
         // Add Buttons to Panel
         this.add(outlineColorButton);
