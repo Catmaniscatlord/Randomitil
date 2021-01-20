@@ -24,7 +24,7 @@ public class DiamondIteration extends TilingIteration {
     public Tilings expandedTiling() {
         int newSize = this.tiling.getSize() + 2 * (2 * this.expansionRate - 1);
         this.iteration++;
-        DiamondTilings newDiamond =  new DiamondTilings(newSize);
+        DiamondTilings newDiamond = new DiamondTilings(newSize);
         newDiamond.setUpTiles();
         return newDiamond;
     }
@@ -236,5 +236,13 @@ public class DiamondIteration extends TilingIteration {
 
     public DiamondTilings getRemovedTiles() {
         return removedTiles;
+    }
+
+    public int getExpansionRate() {
+        return expansionRate;
+    }
+
+    public void setExpansionRate(int expansionRate) {
+        this.expansionRate = expansionRate;
     }
 }
