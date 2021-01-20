@@ -40,13 +40,13 @@ public class UIDiamondGenPanel extends JPanel {
         
         // Adding Listeners to Buttons
         iterateButton.addActionListener(e -> {
-            if (!drawer.getAnimate()) {
+            if (!drawer.isAnimate()) {
                 animator.iterateTiling();
             }
         });
 
         resetButton.addActionListener(e -> {
-            if (!drawer.getAnimate()) {
+            if (!drawer.isAnimate()) {
                 animator.setupTiling();
             }
         });

@@ -317,12 +317,12 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Animate? ///
-    public boolean getAnimate() {
+    public boolean isAnimate() {
         return this.animate;
     }
 
     /// Color Change? ///
-    public boolean getColorChange() {
+    public boolean isColorChange() {
         return this.colorChange;
     }
 
