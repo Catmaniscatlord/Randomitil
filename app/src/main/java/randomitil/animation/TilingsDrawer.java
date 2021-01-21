@@ -39,8 +39,9 @@ public class TilingsDrawer extends JPanel implements Runnable {
     protected Color outlineColor = Color.BLACK;
     private Color backColor = new Color(240, 240, 240);
 
-    protected int prevSize = -1;
+    protected int prevSize = 0;
     protected int boardSize = -1;
+    protected int expansionRate = 1;
 
     /// Constructor ///
     protected TilingsDrawer(int numColors) {
@@ -158,10 +159,13 @@ public class TilingsDrawer extends JPanel implements Runnable {
         // Draw Bounding Box
         g.setColor(outlineColor);
         g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
+        //g.drawRect(borderOffset + paintXOffset, borderOffset + paintYOffset, paintSize, paintSize);
 
         // Transform
         g2.translate(borderOffset + paintXOffset, borderOffset + paintYOffset);
-        setBoardTranslate(g2, scale);
+        this.setBoardTranslate(g2);
+
+        // Scale Graphics Object
         g2.scale(scale, scale);
 
         // Drawing Dominoes
@@ -172,7 +176,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Transform Method ///
-    protected void setBoardTranslate(Graphics2D g2D, double scale) {
+    protected void setBoardTranslate(Graphics2D g2D) {
         // Override
     }
 
@@ -353,21 +357,20 @@ public class TilingsDrawer extends JPanel implements Runnable {
 
     /// Scaling Factor ///
     public double getScale() {
-        // catch nonanimation
-        if (!animate) {
-            return ((double) paintSize / boardSize) / cellSize;
+        if (isAnimate()) {
+            double tempSize = prevSize + (expansionRate + 1) * getTweenFactor();
+            return ((double) paintSize / tempSize) / cellSize;
         }
         
-        // Calculate Scales
-        double oldScale = ((double) paintSize / prevSize) / cellSize;
-        double newScale = ((double) paintSize / boardSize) / cellSize;
-
-        // Return Tweened Scale
-        return oldScale + (newScale - oldScale) * getTweenFactor();
+        return ((double) paintSize / boardSize) / cellSize;
     }
 
     /// Tweening Factor ///
     public double getTweenFactor() {
-        return (double) frameNum /  FPS;
+        if (isAnimate()) {
+            return (double) frameNum /  FPS;
+        }
+
+        return 0;
     }
 }

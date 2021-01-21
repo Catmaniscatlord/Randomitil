@@ -28,58 +28,69 @@ public class DiamondDrawer extends TilingsDrawer {
     }
 
     /// Update Diamond Tiling ///
-    public void updateTiling(DiamondTilings mainTiles, int newSize) {
+    public void updateTiling(DiamondTilings mainTiles, int newSize, int expansionRate) {
         // Update diamond
         this.prevTiles = this.mainTiles;
         this.mainTiles = mainTiles;
 
         // Update Size
         setBoardSize(newSize);
+
+        // Update ExpansionRate
+        this.expansionRate = expansionRate;
     }
 
     /// Transform Method ///
     @Override
-    protected void setBoardTranslate(Graphics2D g2D, double scale) {
-        // Translate origin to Middle-Left point
-        g2D.translate((int) Math.round((cellSize * scale) / 2), (int) Math.round(paintSize / 2.0));
-
-        // Adjust for animation
-        if (animate) {
-            //g2D.translate((int) Math.round(cellSize * scale * getTweenFactor()), 0);
-        }
+    protected void setBoardTranslate(Graphics2D g2D) {
+        // Variables
+        int drawOffset = (int) Math.round((cellSize / 2.0) * getScale());
+        
+        // Translate origin down to middle
+        g2D.translate(drawOffset, (int) Math.round(paintSize / 2.0));
     }
 
     /// Finding Coordinates ///
     private int[] getCoords(int i, int j, int cellStep, DominoTile dom) {
         // Create new array
         int[] newCoords = new int[2];
+        int[] nextCoords = new int[2];
 
         // Set array
         newCoords[0] = i * cellStep + j * cellStep;
         newCoords[1] = i * cellStep - j * cellStep;
 
-        // Tween Movement
-        if (this.isAnimate()) {
-            int tweenStep = (int) Math.floor(cellSize * getTweenFactor());
+        nextCoords[0] = newCoords[0];
+        nextCoords[1] = newCoords[1];
 
+        // Predict Movement
+        if (this.isAnimate()) {
             switch((DominoDirection) dom.getDirection()) {
                 case UP: 
-                    newCoords[1] -= tweenStep;
+                    nextCoords[0] = (i + expansionRate - 1) * cellStep + (j + expansionRate + 1) * cellStep;
+                    nextCoords[1] = (i + expansionRate - 1) * cellStep - (j + expansionRate + 1) * cellStep;
                     break;
 
                 case RIGHT: 
-                    newCoords[0] += tweenStep;
+                    nextCoords[0] = (i + expansionRate + 1) * cellStep + (j + expansionRate + 1) * cellStep;
+                    nextCoords[1] = (i + expansionRate + 1) * cellStep - (j + expansionRate + 1) * cellStep;
                     break;
 
-                case DOWN: 
-                    newCoords[1] += tweenStep;
+                case DOWN:
+                    nextCoords[0] = (i + expansionRate + 1) * cellStep + (j + expansionRate - 1) * cellStep;
+                    nextCoords[1] = (i + expansionRate + 1) * cellStep - (j + expansionRate - 1) * cellStep;
                     break;
 
                 case LEFT: 
-                    newCoords[0] -= tweenStep;
+                    nextCoords[0] = (i + expansionRate - 1) * cellStep + (j + expansionRate - 1) * cellStep;
+                    nextCoords[1] = (i + expansionRate - 1) * cellStep - (j + expansionRate - 1) * cellStep;
                     break;
             }
         }
+
+        // Tween Movement
+        newCoords[0] += Math.round((nextCoords[0] - newCoords[0]) * getTweenFactor());
+        newCoords[1] += Math.round((nextCoords[1] - newCoords[1]) * getTweenFactor());
 
         // Return coords
         return newCoords;

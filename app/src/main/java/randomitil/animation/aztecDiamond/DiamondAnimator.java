@@ -32,7 +32,7 @@ public class DiamondAnimator implements TilingsAnimator {
         diamondIterator.fillBlankSpaces();
 
         // Setup Drawer
-        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize());
+        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize(), diamondIterator.getExpansionRate());
     }
 
     /// Iterate Tiling Once ///
@@ -41,7 +41,7 @@ public class DiamondAnimator implements TilingsAnimator {
         diamondIterator.iterateTiles();
 
         // Update Drawer
-        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize());
+        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize(), diamondIterator.getExpansionRate());
         drawer.setAnimate(true);
         drawer.setFrameNum(0);
     }
