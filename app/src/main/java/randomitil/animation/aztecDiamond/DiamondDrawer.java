@@ -28,16 +28,16 @@ public class DiamondDrawer extends TilingsDrawer {
     }
 
     /// Update Diamond Tiling ///
-    public void updateTiling(DiamondTilings mainTiles, int newSize, int expansionRate) {
+    public void updateTiling(DiamondIteration diamondIterator) {
         // Update diamond
         this.prevTiles = this.mainTiles;
-        this.mainTiles = mainTiles;
+        this.mainTiles = (DiamondTilings) diamondIterator.getTiling();
 
         // Update Size
-        setBoardSize(newSize);
+        setBoardSize(diamondIterator.getTiling().getSize());
 
         // Update ExpansionRate
-        this.expansionRate = expansionRate;
+        this.expansionRate = diamondIterator.getExpansionRate();
     }
 
     /// Transform Method ///
