@@ -112,7 +112,7 @@ public class DiamondAnimator implements TilingsAnimator {
         diamondIterator.fillBlankSpaces();
 
         // Setup Drawer
-        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize());
+        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize(), diamondIterator.getExpansionRate());
     }
 
    public void diffRateSetup( int widthRate, int heightRate) {
@@ -201,7 +201,7 @@ public class DiamondAnimator implements TilingsAnimator {
         diamondIterator.fillBlankSpaces();
 
         // Setup Drawer
-        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize());
+        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize(), diamondIterator.getExpansionRate());
 
    }
 
@@ -209,7 +209,7 @@ public class DiamondAnimator implements TilingsAnimator {
         diamondIterator.setTilingBias((diamondIterator.getIteration() % 4)/3.0);
         diamondIterator.iterateTiles();
         // Update Drawer
-        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize());
+        drawer.updateTiling((DiamondTilings) diamondIterator.getTiling(), diamondIterator.getTiling().getSize(), diamondIterator.getExpansionRate());
         drawer.setAnimate(false);
         drawer.setFrameNum(0);
     }
