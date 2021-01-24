@@ -10,8 +10,6 @@ public class DiamondIteration extends TilingIteration {
 
     private Random rand = new Random();
 
-    private DiamondTilings removedTiles;
-
     public DiamondIteration(DiamondTilings tiling) {
         super(tiling);
         this.expansionRate = 1;
@@ -21,7 +19,7 @@ public class DiamondIteration extends TilingIteration {
      * if you want custom expansion
      */
     @Override
-    public Tilings expandedTiling() {
+    protected Tilings expandedTiling() {
         int newSize = this.tiling.getSize() + 2 * (2 * this.expansionRate - 1);
         this.iteration++;
         DiamondTilings newDiamond = new DiamondTilings(newSize);
@@ -30,25 +28,27 @@ public class DiamondIteration extends TilingIteration {
     }
 
     @Override
-    public void findBlankSpaces() {
-         /* we subtract one because empty squares needs a space of 2 tiles
-         * the size of a tile at the end of the array is 1, so we subtract
+    protected void findBlankSpaces() {
+        /*
+         * we subtract one because empty squares needs a space of 2 tiles the size of a
+         * tile at the end of the array is 1, so we subtract
          *
-         * note: the indice of the square and tiles in the aztec diamond corralate in a somewhat 1-1 manner
+         * note: the indice of the square and tiles in the aztec diamond corralate in a
+         * somewhat 1-1 manner
          */
         boolean isEmpty;
         this.blankSpaces = new boolean[this.tiling.getSize() - 1][this.tiling.getSize() - 1];
         for (int i = 0; i < this.blankSpaces.length; i++) {
             for (int j = 0; j < this.blankSpaces[i].length; j++) {
-                // only when the tile isnt null may the tile be empty and  
+                // only when the tile isnt null may the tile be empty and
                 // if the orientation of the tile is vertical, then the square my be valid
-                if(this.tiling.getTile(i, j) == null && tiling.getOrientation(i, j) == DominoOrientation.VERTICAL) {
+                if (this.tiling.getTile(i, j) == null && tiling.getOrientation(i, j) == DominoOrientation.VERTICAL) {
                     isEmpty = true;
-                    if(!this.tiling.tileHasNeighbors(i, j)) {
+                    if (!this.tiling.tileHasNeighbors(i, j)) {
                         for (int k = 0; k < 2; k++) {
                             for (int l = 0; l < 2; l++) {
-                                if (this.tiling.tileHasNeighbors(k + i, l + j) || 
-                                    this.tiling.getTile(k + i, l + j) != null) {
+                                if (this.tiling.tileHasNeighbors(k + i, l + j)
+                                        || this.tiling.getTile(k + i, l + j) != null) {
                                     isEmpty = false;
                                 }
                             }
@@ -98,7 +98,7 @@ public class DiamondIteration extends TilingIteration {
     }
 
     @Override
-    public void fillBlankSpace(int y, int x) {
+    protected void fillBlankSpace(int y, int x) {
         double orientation = rand.nextDouble();
         if (orientation <= tilingBias) {
             generateTile(y + 1, x, DominoDirection.DOWN);
@@ -109,7 +109,8 @@ public class DiamondIteration extends TilingIteration {
         }
     }
 
-    private void generateTile(int y, int x, DominoDirection direction) {
+    @Override
+	protected void generateTile(int y, int x, Direction direction) {
         this.tiling.setTile(y, x, new DominoTile(direction));
         if(animationMode) {
             this.generatedTiles.setTile(y, x,  new DominoTile(direction));
@@ -118,7 +119,6 @@ public class DiamondIteration extends TilingIteration {
 
     @Override
     public void moveTiles() {
-        removeOpposingTiles();
         DiamondTilings newDiamond = (DiamondTilings) expandedTiling();
         int expansionRate =  2 * this.expansionRate - 1;
         DominoTile tile;
@@ -149,7 +149,8 @@ public class DiamondIteration extends TilingIteration {
         this.tiling = newDiamond;
     }
 
-    private void removeOpposingTiles () {
+    @Override
+    public void removeOpposingTiles () {
         DominoTile tile;
         DominoTile[][] neighbors;
          
@@ -212,6 +213,7 @@ public class DiamondIteration extends TilingIteration {
 
     @Override
     public void iterateTiles() {
+        removeOpposingTiles();
         moveTiles();
         fillBlankSpaces();
     }
@@ -232,10 +234,6 @@ public class DiamondIteration extends TilingIteration {
             buf.append("]\n");
         }
         return buf.toString();
-    }
-
-    public DiamondTilings getRemovedTiles() {
-        return removedTiles;
     }
 
     public int getExpansionRate() {

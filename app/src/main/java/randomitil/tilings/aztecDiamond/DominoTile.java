@@ -3,7 +3,7 @@ package randomitil.tilings.aztecDiamond;
 import randomitil.tilings.*;
 
 public class DominoTile extends Tile {
-    public DominoTile(DominoDirection direction) {
+    public DominoTile(Direction direction) {
         super(direction);
     }
 

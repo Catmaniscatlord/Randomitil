@@ -6,6 +6,7 @@ public abstract class TilingIteration{
 
     protected int iteration;
     protected boolean[][] blankSpaces;
+    protected Tilings removedTiles;
 
     protected double tilingBias;
 
@@ -16,19 +17,27 @@ public abstract class TilingIteration{
         this.tiling = tiling;
     }
 
-    abstract public Tilings expandedTiling();
+    abstract protected Tilings expandedTiling();
     
-    abstract public void findBlankSpaces();
+    abstract protected void findBlankSpaces();
     
     abstract public void fillBlankSpaces();
    
-    abstract public void fillBlankSpace(int y, int x);
+    abstract protected void fillBlankSpace(int y, int x);
+
+    abstract protected void generateTile(int y, int x, Direction direction);
    
     abstract public void moveTiles();
+
+    abstract public void removeOpposingTiles();
    
+    abstract public String blankSpacesString();
+    
     abstract public void iterateTiles();
 
-    abstract public String blankSpacesString();
+    public Tilings getRemovedTiles() {
+        return removedTiles;
+    }
 
     public void setTiling(Tilings tiling) {
         this.tiling = tiling;
