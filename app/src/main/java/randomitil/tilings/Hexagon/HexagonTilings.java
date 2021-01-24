@@ -1,5 +1,7 @@
 package randomitil.tilings.Hexagon;
 
+import java.util.Arrays;
+
 import randomitil.tilings.*;
 
 public class HexagonTilings extends Tilings {
@@ -39,39 +41,46 @@ public class HexagonTilings extends Tilings {
     
     @Override
     public RhombusTile[][] getTileNeighbors(int y, int x) {
-        Tile[][] neighbors = new Tile[3][3];
+        RhombusTile[][] neighbors = new RhombusTile[2][2];
         if(getOrientation(y, x) == RhombusOrientation.VERTICAL) {
-            if(x != 0 && y < this.size * 2)
-                neighbors[0][0] = getTile(y - 1, (2 * x) - 1);
-            if(x != 0 && y > this.size * 2)
-                neighbors[2][0] = getTile(y + 1, (2 * x) - 1);
-            if(x != this.tiles[y].length - 1 && y < this.size * 2)
-                neighbors[0][2] = getTile(y - 1, (2 * x) + 1);
-            if(x != this.tiles[y].length - 1 && y > this.size * 2)
-                neighbors[2][2] = getTile(y + 1, (2 * x) + 1);
+            if(y > this.size * 2) {
+                neighbors[0][0] = getTile(y - 1, (x * 2));
+                neighbors[0][1] = getTile(y - 1, (x * 2) + 1);
+                if(x != 0)
+                    neighbors[1][0] = getTile(y + 1, (x * 2) - 1);
+                if(x != this.tiles[y].length - 1)
+                    neighbors[1][1] = getTile(y + 1, (x * 2));
+            }
+            if(y < this.size * 2) {
+                if(x != 0)
+                    neighbors[0][0] = getTile(y - 1, (x * 2) - 1);
+                if(x != this.tiles[y].length - 1)
+                    neighbors[0][1] = getTile(y - 1, (x * 2));
+                neighbors[1][0] = getTile(y + 1, (x * 2));
+                neighbors[1][1] = getTile(y + 1, (x * 2) + 1);
+            }
         }
         else if(getOrientation(y, x) == RhombusOrientation.RIGHTDIAGONAL){
             if(x != 0)
-                neighbors[2][0] = getTile(y, x - 1);
+                neighbors[1][0] = getTile(y, x - 1);
             if(y != this.tiles.length - 1)
-                neighbors[2][2] = getTile(y + 1, x / 2);
+                neighbors[1][1] = getTile(y + 1, (x / 2));
             if(y != 0)
-                neighbors[0][0] = getTile(y - 1, (x / 2) + 1);
+                neighbors[0][0] = getTile(y - 1, (x + 1) / 2);
             if(x != this.tiles[y].length - 1)
-                neighbors[0][2] = getTile(y, x + 1);      
+                neighbors[0][1] = getTile(y, x + 1);  
         }
         else if(getOrientation(y, x) == RhombusOrientation.LEFTDIAGONAL){
             if(x != this.tiles[y].length - 1)
                 neighbors[0][0] = getTile(y, x + 1);
             if(y != this.tiles.length - 1)
-                neighbors[0][2] = getTile(y + 1, (x / 2) + 1);
+                neighbors[0][1] = getTile(y + 1, (x + 1) / 2);
             if(x != 0)
-                neighbors[2][0] = getTile(y, x - 1);
+                neighbors[1][1] = getTile(y, x - 1);
             if(y != 0)
-                neighbors[2][2] = getTile(y - 1, x / 2);
+                neighbors[1][0] = getTile(y - 1, (x / 2));
         }
-        neighbors[1][1] = getTile(y, x);
-        return null;
+        return neighbors;
     }
 
     public RhombusTile[][] getTileOpposingNeighbors(int y, int x) {
@@ -82,12 +91,15 @@ public class HexagonTilings extends Tilings {
     @Override
     public boolean tileHasNeighbors(int y, int x) {
         RhombusTile[][] tileNeighbors = getTileNeighbors(y, x);
+        if(getTile(y, x) != null)
+            System.out.println(Arrays.deepToString(tileNeighbors));
         for (RhombusTile[] i : tileNeighbors) {
             for (RhombusTile j : i) {
                 if(j != null && j.isPlaceable())
                     return true;
             }
         }
+
         return false;
     }
 
@@ -170,5 +182,10 @@ public class HexagonTilings extends Tilings {
             buf.append("]\n");
         }
         return buf.toString();
+    }
+
+    @Override
+    public RhombusTile getTile(int y, int x) {
+        return (RhombusTile) super.getTile(y, x);
     }
 }
