@@ -1,10 +1,6 @@
 package randomitil.tilings.aztecDiamond;
 
 import randomitil.tilings.*;
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class DiamondTilings extends Tilings{
     
     public DiamondTilings() {
@@ -34,10 +30,8 @@ public class DiamondTilings extends Tilings{
             for (int j = 0; j < neighbors[i].length; j++) {
                 neighborY = y + i - 1;
                 neighborX = x + j - 1;
-                if (neighborX >= 0 && neighborY >= 0 && neighborX < this.size && neighborY < this.size) {
+                if (neighborX >= 0 && neighborY >= 0 && neighborX < this.size && neighborY < this.size)
                     neighbors[i][j] = (DominoTile) getTile(neighborY, neighborX);
-                } else
-                    neighbors[i][j] = new DominoTile(false);
             }
         }
         // this makes sure that we dont return the domino as one of its neighbors
@@ -47,30 +41,22 @@ public class DiamondTilings extends Tilings{
 
     @Override
     public boolean tileHasNeighbors(int y, int x) {
-        Set<Tile> neighbors = new HashSet<Tile>();
+        DominoTile t;
         DominoTile[][] tileNeighbors = getTileNeighbors(y, x);
         for (int i = 0; i < tileNeighbors.length; i++) {
             for (int j = 0; j < tileNeighbors[i].length; j++) {
                 if (!((getOrientation(y, x) == DominoOrientation.HORIZONTAL && ((i == 0 && j == 2) || (i == 2 && j == 0)))
                     || (getOrientation(y, x) == DominoOrientation.VERTICAL && ((i == 0 && j == 0) || (i == 2 && j == 2))))) {
-                    neighbors.add(tileNeighbors[i][j]);
-                }
-            }
-        }
-        /*
-         * most of the time the neighbors will only contain null when it contains
-         * another domino there is a possiblity that the domino is a placeholder in the
-         * array in which case we move on
-         */
-        if (neighbors.size() != 1) {
-            for (Tile t : neighbors) {
-                if(t != null && t.isPlaceable()) {
-                    return true;
+                    t = tileNeighbors[i][j];
+                    /* if we ever encounter a tile that isnt null
+                     * or placeable, the tile has neighbors
+                     **/
+                    if( t != null && t.isPlaceable())
+                        return true;
                 }
             }
         }
         return false;
-
     }
 
     @Override
