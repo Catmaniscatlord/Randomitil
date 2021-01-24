@@ -17,16 +17,16 @@ public class RhombusTile extends Tile{
             return "###";
         }
         else if(this.direction == RhombusDirection.UP) {
-            return " /\\";
+            return " > ";
         }
         else if(this.direction == RhombusDirection.UPLEFTDIAGONAL) {
-            return " *\\";
-        }
-        else if(this.direction == RhombusDirection.UPRIGHTDIAGONAL) {
             return " /*";
         }
+        else if(this.direction == RhombusDirection.UPRIGHTDIAGONAL) {
+            return " *\\";
+        }
         else if(this.direction == RhombusDirection.DOWN) {
-            return " \\/";
+            return " < ";
         }
         else if(this.direction == RhombusDirection.DOWNLEFTDIAGONAL) {
             return " _/";
