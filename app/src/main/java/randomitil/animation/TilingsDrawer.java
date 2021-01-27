@@ -12,17 +12,20 @@ public class TilingsDrawer extends JPanel implements Runnable {
     private static final long serialVersionUID = 3337828037218852291L;
 
     // GUI Variables
-    protected boolean running = true;
-    protected boolean animate = false;
-    protected boolean colorChange = false;
-    protected int animSpeed = 1;
-    protected int frameNum = 0;
+    private boolean running = true;
+    private boolean animate = false;
+    private boolean colorChange = false;
+    private double animSpeed = 0.5;
+    private double frameNum = 0;
     
     // Animation Variables
     private Thread animThread;
+    private int animPhase = 1;
+    private int numAnimPhases = 3;
     private final int FPS = 60;
     private final int DELAY = (int) Math.round(1000.0 / FPS);
 
+    // Drawing Variables
     private int displaySize = 500;
     protected int paintSize = 400;
     private int paintXOffset = 0;
@@ -30,18 +33,23 @@ public class TilingsDrawer extends JPanel implements Runnable {
     private int borderOffset = 50;
     protected int cellSize = (int) Math.round(paintSize / 2.0);
 
+    // Color Changing Variables
     private double colorPhase = 0;
     private int colorStep = -1;
-    private int colorIndex = 0;
+    private double colorIndex = 0;
     private int numColors;
     private Color[] dirColors;
     protected Color[] useColors;
     protected Color outlineColor = Color.BLACK;
     private Color backColor = new Color(240, 240, 240);
 
+    // Size variables
     protected int prevSize = 0;
     protected int boardSize = -1;
     protected int expansionRate = 1;
+
+    // Animator Instance
+    private TilingsAnimator animator;
 
     /// Constructor ///
     protected TilingsDrawer(int numColors) {
@@ -159,7 +167,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
         // Draw Bounding Box
         g.setColor(outlineColor);
         g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
-        //g.drawRect(borderOffset + paintXOffset, borderOffset + paintYOffset, paintSize, paintSize);
+        g.drawRect(borderOffset + paintXOffset, borderOffset + paintYOffset, paintSize, paintSize);
 
         // Transform
         g2.translate(borderOffset + paintXOffset, borderOffset + paintYOffset);
@@ -184,21 +192,34 @@ public class TilingsDrawer extends JPanel implements Runnable {
     private void nextFrame() {
         // Change Frame
         if (frameNum < FPS) {
+            // Change Frame Number
             frameNum += animSpeed;
+
+            // Change Animation Phase
+            if (frameNum % (int) Math.round(FPS / (double) numAnimPhases) == 0) {
+                animPhase++;
+            }
         } else {
+            // Reset Animation
             frameNum = 0;
             animate = false;
+            animPhase = 1;
+
+            // Call for next expansion
+            if (animator.isAutoAnimate()) {
+                animator.autoIterateTiling();
+            }
         }
 
         // Change Color Phase
         if (colorChange) {
-            if (colorPhase + 1 < FPS) {
+            if (colorPhase + animSpeed < FPS) {
                 colorPhase += animSpeed;
             } else {
                 colorPhase = 0;
                 colorIndex += animSpeed * colorStep;
                 // Wrapping
-                colorIndex = wrapVal(colorIndex, 0, 3);
+                colorIndex = wrapVal((int) Math.floor(colorIndex), 0, 3);
             }
         }
     }
@@ -225,7 +246,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     protected Color getPhaseColor(int index) {
         // adjust phase & index
         double phase = colorPhase % FPS;
-        index = wrapVal(colorIndex + index, 0, 3);
+        index = wrapVal((int) Math.floor(colorIndex) + index, 0, 3);
         
         // Vars
         int newR = dirColors[index].getRed();
@@ -303,7 +324,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Anim Speed ///
-    public void setAnimSpeed(int animSpeed) {
+    public void setAnimSpeed(double animSpeed) {
         this.animSpeed = animSpeed;
     }
 
@@ -311,6 +332,21 @@ public class TilingsDrawer extends JPanel implements Runnable {
     public void setBoardSize(int newSize) {
         this.prevSize = this.boardSize;
         this.boardSize = newSize;
+    }
+
+    /// Animation Phase ///
+    public void setAnimPhase(int animPhase) {
+        this.animPhase = animPhase;
+    }
+
+    /// Num of Animation Phases ///
+    public void setNumAnimPhases(int numAnimPhases) {
+        this.numAnimPhases = numAnimPhases;
+    }
+
+    /// Animator Object ///
+    public void setAnimator(TilingsAnimator animator) {
+        this.animator = animator;
     }
 
     /// Getter Methods ///---------------------------------------------------------
@@ -346,7 +382,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     }
 
     /// Anim Speed ///
-    public int getAnimSpeed() {
+    public double getAnimSpeed() {
         return this.animSpeed;
     }
 
@@ -355,22 +391,46 @@ public class TilingsDrawer extends JPanel implements Runnable {
         return this.boardSize;
     }
 
+    /// Animator Object ///
+    public TilingsAnimator getAnimator() {
+        return this.animator;
+    }
+
+    /// Animation Phase ///
+    public int getAnimPhase() {
+        return this.animPhase;
+    }
+
+    /// Num of Animation Phases ///
+    public int getNumAnimPhases() {
+        return this.numAnimPhases;
+    }
+
     /// Scaling Factor ///
-    public double getScale() {
-        if (isAnimate()) {
-            double tempSize = prevSize + (expansionRate + 1) * getTweenFactor();
-            return ((double) paintSize / tempSize) / cellSize;
-        }
-        
+    public double getOldScale() {
+        return ((double) paintSize / prevSize) / cellSize;
+    }
+
+    public double getNewScale() {
         return ((double) paintSize / boardSize) / cellSize;
+    }
+
+    public double getAdaptedScale() {
+        double tempSize = prevSize + (expansionRate + 1) * getTweenFactor();
+        return ((double) paintSize / tempSize) / cellSize;
+    }
+
+    public double getScale() {
+        // Override
+        return 0.0;
     }
 
     /// Tweening Factor ///
     public double getTweenFactor() {
-        if (isAnimate()) {
-            return (double) frameNum /  FPS;
-        }
-
-        return 0;
+        // Variables
+        int phaseLength = (int) Math.round(FPS / (double) numAnimPhases);
+        
+        // Return Tween Factor      
+        return (frameNum % phaseLength) / (double) phaseLength;
     }
 }

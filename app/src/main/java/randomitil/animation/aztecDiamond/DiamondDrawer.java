@@ -14,6 +14,8 @@ public class DiamondDrawer extends TilingsDrawer {
     // Variables
     private DiamondTilings mainTiles = null;
     private DiamondTilings prevTiles;
+    private DiamondTilings newTiles;
+    private DiamondTilings removedTiles;
 
     /// Constructor ///
     public DiamondDrawer() {
@@ -32,6 +34,8 @@ public class DiamondDrawer extends TilingsDrawer {
         // Update diamond
         this.prevTiles = this.mainTiles;
         this.mainTiles = (DiamondTilings) diamondIterator.getTiling();
+        this.newTiles = (DiamondTilings) diamondIterator.getGeneratedTiles();
+        this.removedTiles = (DiamondTilings) diamondIterator.getRemovedTiles();
 
         // Update Size
         setBoardSize(diamondIterator.getTiling().getSize());
@@ -51,7 +55,7 @@ public class DiamondDrawer extends TilingsDrawer {
     }
 
     /// Finding Coordinates ///
-    private int[] getCoords(int i, int j, int cellStep, DominoTile dom) {
+    private int[] getCoords(int i, int j, int cellStep, DominoTile dom, boolean moving) {
         // Create new array
         int[] newCoords = new int[2];
         int[] nextCoords = new int[2];
@@ -64,7 +68,7 @@ public class DiamondDrawer extends TilingsDrawer {
         nextCoords[1] = newCoords[1];
 
         // Predict Movement
-        if (this.isAnimate()) {
+        if (moving) {
             switch((DominoDirection) dom.getDirection()) {
                 case UP: 
                     nextCoords[0] = (i + expansionRate - 1) * cellStep + (j + expansionRate + 1) * cellStep;
@@ -86,20 +90,21 @@ public class DiamondDrawer extends TilingsDrawer {
                     nextCoords[1] = (i + expansionRate - 1) * cellStep - (j + expansionRate - 1) * cellStep;
                     break;
             }
-        }
-
+        
         // Tween Movement
         newCoords[0] += Math.round((nextCoords[0] - newCoords[0]) * getTweenFactor());
         newCoords[1] += Math.round((nextCoords[1] - newCoords[1]) * getTweenFactor());
+        }
 
         // Return coords
         return newCoords;
     }
 
     /// Domino Drawing Method ///
-    private void drawDomino(Graphics2D g2D, int index, int x, int y, double scale) {
+    private void drawDomino(Graphics2D g2D, int index, int x, int y, double scale, int alpha) {
         // Fill
-        g2D.setColor(useColors[index]);
+        int newAlpha = (int) Math.round(useColors[index].getAlpha() * (alpha / 255.0));
+        g2D.setColor(new Color(useColors[index].getRed(), useColors[index].getGreen(), useColors[index].getBlue(), newAlpha));
 
         if (index % 2 == 0) {
             g2D.fillRect(x - cellSize, y - cellSize / 2, cellSize * 2, cellSize);
@@ -109,7 +114,8 @@ public class DiamondDrawer extends TilingsDrawer {
         
         // Outline
         if (scale >= 0.025) {
-            g2D.setColor(outlineColor);
+            newAlpha = (int) Math.round(outlineColor.getAlpha() * (alpha / 255.0));
+            g2D.setColor(new Color(outlineColor.getRed(), outlineColor.getGreen(), outlineColor.getBlue(), newAlpha));
 
             if (index % 2 == 0) {
                 g2D.drawRect(x - cellSize, y - cellSize / 2, cellSize * 2, cellSize);
@@ -119,21 +125,43 @@ public class DiamondDrawer extends TilingsDrawer {
         }
     }
 
-    /// Domino Drawing Method ///
+    /// Draw Domino Based on Direction ///
+    private void drawDominoDirection(Graphics2D g2D, DominoTile dom, int x, int y, double scale, int alpha) {
+        switch((DominoDirection) dom.getDirection()) {
+            case UP: 
+                drawDomino(g2D, 0, x, y, scale, alpha);
+                break;
+
+            case RIGHT: 
+                drawDomino(g2D, 1, x, y, scale, alpha);
+                break;
+
+            case DOWN: 
+                drawDomino(g2D, 2, x, y, scale, alpha);
+                break;
+
+            case LEFT: 
+                drawDomino(g2D, 3, x, y, scale, alpha);
+                break;
+        }
+    }
+
+    /// Diamond Drawing Method ///
     @Override
     protected void drawTiling(Graphics2D g2D, double scale) {
         // Setup Variables
-        DominoTile dom = null;
-        int[] coords;
-        int size = boardSize;
-        DiamondTilings drawTiles = mainTiles;
         int cellStep = (int) Math.round(cellSize / 2.0);
 
+        DominoTile dom = null;
 
-        // Adjust for animation
-        if (animate && prevSize != -1) {
-            size = prevSize;
-            drawTiles = prevTiles;
+        DiamondTilings drawTiles = prevTiles;
+        int size = prevSize;
+        int[] coords;
+        
+        // Size and tile Adjustment
+        if (!isAnimate() || getAnimPhase() == 3) {
+            drawTiles = mainTiles;
+            size = boardSize;
         }
 
         // Phase Colors
@@ -147,34 +175,60 @@ public class DiamondDrawer extends TilingsDrawer {
             for (int j = 0; j < size; j++) {
                 // Retrive Domino
                 dom = (DominoTile) drawTiles.getTile(i, j);
-
+                
                 // Draw Placeable Dominoes
                 if (dom != null && dom.isPlaceable()) {
                     // Calculate coordinates
-                    coords = getCoords(i, j, cellStep, dom);
+                    coords = getCoords(i, j, cellStep, dom, getPhaseMove());
 
                     // Change drawing based on direction
-                    switch((DominoDirection) dom.getDirection()) {
-                        case UP: 
-                            drawDomino(g2D, 0, coords[0], coords[1], scale);
-                            break;
+                    drawDominoDirection(g2D, dom, coords[0], coords[1], scale, getPhaseAlpha( i, j));
 
-                        case RIGHT: 
-                            drawDomino(g2D, 1, coords[0], coords[1], scale);
-                            break;
-
-                        case DOWN: 
-                            drawDomino(g2D, 2, coords[0], coords[1], scale);
-                            break;
-
-                        case LEFT: 
-                            drawDomino(g2D, 3, coords[0], coords[1], scale);
-                            break;
-                    }
                     // Skip over Null Domino
                     j++;
                 }
             }
         }
+    }
+
+    /// Control phase scaling ///
+    @Override
+    public double getScale() {
+        // Nonanimated scaling
+        if (!isAnimate()) {
+            return getNewScale();
+        } else {
+            // Move Scaling during phase 2
+            if (getAnimPhase() == 2 || getNumAnimPhases() == 1) {
+                return getAdaptedScale();
+            }
+        }
+
+        // Default return
+        return getOldScale();
+    }
+
+    /// Control phase Alpha ///
+    private int getPhaseAlpha(int i, int j) {
+        // Changing Alpha
+        if (isAnimate()) {
+            // Fading out
+            if (getAnimPhase() == 1 && getNumAnimPhases() >= 2 && removedTiles.getTile(i, j) != null) {
+                return (int) Math.round(255 - 255 * getTweenFactor());
+            }
+
+            // Fading in
+            if (getAnimPhase() == 3 && newTiles.getTile(i, j) != null) {
+                return (int) Math.round(255 * getTweenFactor());
+            }
+        }
+
+        // default alpha
+        return 255;
+    }
+
+    /// Control phase Movement ///
+    private boolean getPhaseMove() {
+        return (isAnimate() && (getAnimPhase() == 2 || getNumAnimPhases() == 1));
     }
 }
