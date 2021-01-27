@@ -3,10 +3,10 @@ package randomitil.tilings.Hexagon;
 import randomitil.tilings.Direction;
 
 public enum RhombusDirection implements Direction {
-   UP,
+   RIGHT,
    UPLEFTDIAGONAL,
    DOWNRIGHTDIAGONAL,
-   DOWN,
+   LEFT,
    UPRIGHTDIAGONAL,
    DOWNLEFTDIAGONAL
 }
