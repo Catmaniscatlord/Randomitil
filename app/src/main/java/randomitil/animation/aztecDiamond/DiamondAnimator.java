@@ -3,7 +3,7 @@ package randomitil.animation.aztecDiamond;
 
 // Imports
 import randomitil.animation.*;
-import randomitil.tilings.Tilings;
+import randomitil.tilings.*;
 import randomitil.tilings.aztecDiamond.*;
 
 // Class Declaration
@@ -12,6 +12,8 @@ public class DiamondAnimator implements TilingsAnimator {
     // Class Variables
     private DiamondDrawer drawer;
     private DiamondIteration diamondIterator;
+    private boolean autoAnimate = false;
+    private int finalSize = 2;
 
     /// Constructor ///
     public DiamondAnimator(DiamondDrawer drawer) {
@@ -33,11 +35,13 @@ public class DiamondAnimator implements TilingsAnimator {
 
         // Setup Drawer
         drawer.updateTiling(diamondIterator);
+        drawer.setAnimator(this);
     }
 
     /// Iterate Tiling Once ///
     public void iterateTiling() {
         // Iterate
+        diamondIterator.setAnimationMode(true);
         diamondIterator.iterateTiles();
 
         // Update Drawer
@@ -46,7 +50,16 @@ public class DiamondAnimator implements TilingsAnimator {
         drawer.setFrameNum(0);
     }
 
-    //sets up the aztec diamond to perform same rate expansions
+    /// Automatic Iteration ///
+    public void autoIterateTiling() {
+        if (diamondIterator.getTiling().getSize() < finalSize) {
+            this.iterateTiling();
+        } else {
+            this.autoAnimate = false;
+        }
+    }
+
+    /// sets up the aztec diamond to perform same rate expansions ///
     public void sameRateSetup(int expansionRate) {
 
         class BaseTiling extends DiamondTilings {
@@ -212,5 +225,34 @@ public class DiamondAnimator implements TilingsAnimator {
         drawer.updateTiling(diamondIterator);
         drawer.setAnimate(false);
         drawer.setFrameNum(0);
+    }
+
+    /// Setter Methods ///---------------------------------------------------------------
+
+    /// Set Final Size ///
+    public void setFinalSize(int finalSize) {
+        this.finalSize = finalSize;
+    }
+
+    /// Set Auto Animate ///
+    public void setAutoAnimate(boolean autoAnimate) {
+        this.autoAnimate = autoAnimate;
+    }
+
+    /// Getter Methods ///---------------------------------------------------------------
+
+    // Get Iterator
+    public TilingIteration getIterator() {
+        return this.diamondIterator;
+    }
+
+    /// Get Final Size ///
+    public int getFinalSize() {
+        return this.finalSize;
+    }
+
+    /// Is Auto Animate? ///
+    public boolean isAutoAnimate() {
+        return this.autoAnimate;
     }
 }
