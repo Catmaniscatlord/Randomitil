@@ -79,7 +79,6 @@ public class DiamondIteration extends TilingIteration {
          * [*,*,3,*,*]
         */
 
-        System.out.println(this.blankSpaces.length);
         for (int i = 0; i < this.blankSpaces.length; i++) {
             for (int j = 0; j < this.blankSpaces[i].length; j++) {
                 if(this.blankSpaces[i][j]) {
@@ -216,7 +215,6 @@ public class DiamondIteration extends TilingIteration {
     public void iterateTiles() {
         removeOpposingTiles();
         moveTiles();
-        System.out.println(this.tiling.getTiles().length);
         fillBlankSpaces();
     }
 
