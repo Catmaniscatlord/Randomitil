@@ -41,13 +41,16 @@ public class DiamondAnimator implements TilingsAnimator {
     /// Iterate Tiling Once ///
     public void iterateTiling() {
         // Iterate
-        diamondIterator.setAnimationMode(true);
+        diamondIterator.setAnimationMode(drawer.isAnimate());
+
+        if (drawer.isAnimate()) {
+            drawer.setFrameNum(0);
+        }
+        
         diamondIterator.iterateTiles();
 
         // Update Drawer
         drawer.updateTiling(diamondIterator);
-        drawer.setAnimate(true);
-        drawer.setFrameNum(0);
     }
 
     /// Automatic Iteration ///

@@ -4,6 +4,7 @@ package randomitil;
 // Imports
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.Dimension;
 
 import javax.swing.*;
 
@@ -30,6 +31,10 @@ public class DiamondInterface extends JFrame {
     
     /// Initialization ///
     private void initUI() {
+        // Set Minimum dimension
+        Dimension minFrameSize = new Dimension(800, 600);
+        setMinimumSize(minFrameSize);
+
         // Create main panel
         mainPanel = new JPanel(new GridLayout(1, 2));
         mainPanel.add(this.drawer);

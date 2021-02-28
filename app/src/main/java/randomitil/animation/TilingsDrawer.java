@@ -13,8 +13,11 @@ public class TilingsDrawer extends JPanel implements Runnable {
 
     // GUI Variables
     private boolean running = true;
+    private boolean spin = false;
     private boolean animate = false;
     private boolean colorChange = false;
+    private double colorSpeed = 0.5;
+    private double spinSpeed = -1;
     private double animSpeed = 0.5;
     private double frameNum = 0;
     
@@ -28,10 +31,18 @@ public class TilingsDrawer extends JPanel implements Runnable {
     // Drawing Variables
     private int displaySize = 500;
     protected int paintSize = 400;
-    private int paintXOffset = 0;
-    private int paintYOffset = 0;
+
+    private int displayXOffset = 0;
+    private int displayYOffset = 0;
+
+    protected int paintXOffset = 0;
+    protected int paintYOffset = 0;
+
     private int borderOffset = 50;
+
     protected int cellSize = (int) Math.round(paintSize / 2.0);
+
+    private double paintDir = 0;
 
     // Color Changing Variables
     private double colorPhase = 0;
@@ -162,19 +173,21 @@ public class TilingsDrawer extends JPanel implements Runnable {
         
         // Setup Drawing
         Graphics2D g2 = (Graphics2D) g;
-        double scale = getScale();
+        double scale = getScale(getAnimPhase());
 
         // Draw Bounding Box
         g.setColor(outlineColor);
-        g.drawRect(borderOffset / 2 + paintXOffset, borderOffset / 2 + paintYOffset, paintSize + borderOffset, paintSize + borderOffset);
-        g.drawRect(borderOffset + paintXOffset, borderOffset + paintYOffset, paintSize, paintSize);
+        g.drawRect(borderOffset / 2 + displayXOffset, borderOffset / 2 + displayYOffset, paintSize + borderOffset, paintSize + borderOffset);
 
         // Transform
-        g2.translate(borderOffset + paintXOffset, borderOffset + paintYOffset);
-        this.setBoardTranslate(g2);
+        g2.translate(borderOffset + displayXOffset + paintSize / 2, borderOffset + displayYOffset + paintSize / 2);
+        changePaintOffsets();
 
         // Scale Graphics Object
         g2.scale(scale, scale);
+
+        // Rotate Graphics Object
+        g2.rotate((paintDir * Math.PI) / 180.0);
 
         // Drawing Dominoes
         drawTiling(g2, scale);
@@ -183,9 +196,9 @@ public class TilingsDrawer extends JPanel implements Runnable {
         Toolkit.getDefaultToolkit().sync();
     }
 
-    /// Transform Method ///
-    protected void setBoardTranslate(Graphics2D g2D) {
-        // Override
+    /// Change Paint Offsets ///
+    protected void changePaintOffsets() {
+        // Empty for Override
     }
 
     /// Update Method ///
@@ -199,11 +212,11 @@ public class TilingsDrawer extends JPanel implements Runnable {
             if (frameNum % (int) Math.round(FPS / (double) numAnimPhases) == 0) {
                 animPhase++;
             }
+
         } else {
             // Reset Animation
-            frameNum = 0;
-            animate = false;
-            animPhase = 1;
+            resetAnimate();
+            setAnimate(false);
 
             // Call for next expansion
             if (animator.isAutoAnimate()) {
@@ -211,15 +224,23 @@ public class TilingsDrawer extends JPanel implements Runnable {
             }
         }
 
+        // Change Paint Direction
+        if (spin) {
+            paintDir += spinSpeed;
+            paintDir = wrapVal(paintDir, 0.0, 359.0);
+        } else {
+            paintDir = 0;
+        }
+
         // Change Color Phase
         if (colorChange) {
-            if (colorPhase + animSpeed < FPS) {
-                colorPhase += animSpeed;
+            if (colorPhase + colorSpeed < FPS) {
+                colorPhase += colorSpeed;
             } else {
                 colorPhase = 0;
-                colorIndex += animSpeed * colorStep;
+                colorIndex += colorSpeed * colorStep;
                 // Wrapping
-                colorIndex = wrapVal((int) Math.floor(colorIndex), 0, 3);
+                colorIndex = wrapVal((int) Math.floor(colorIndex), 0, numColors - 1);
             }
         }
     }
@@ -231,6 +252,19 @@ public class TilingsDrawer extends JPanel implements Runnable {
 
     /// Wrap values Method ///
     public int wrapVal(int val, int min, int max) {
+        if (val > max) {
+            val = min + (Math.abs(val - max) - 1) % (Math.abs(max - min));
+        }
+        
+        if (val < min) {
+            val = max - (Math.abs(min - val) - 1) % (Math.abs(max - min));
+        }
+
+        return val;
+    }
+
+    /// Wrap double values Method ///
+    public double wrapVal(double val, double min, double max) {
         if (val > max) {
             val = min + (Math.abs(val - max) - 1) % (Math.abs(max - min));
         }
@@ -287,10 +321,20 @@ public class TilingsDrawer extends JPanel implements Runnable {
         paintSize = (int) Math.round(displaySize * 0.8);
         borderOffset = (int) Math.round(paintSize / 8.0);
 
-        paintXOffset = Math.max(0, (width - displaySize) / 2);
-        paintYOffset = Math.max(0, (height - displaySize) / 2);
+        displayXOffset = Math.max(0, (width - displaySize) / 2);
+        displayYOffset = Math.max(0, (height - displaySize) / 2);
 
         cellSize = (int) Math.round(paintSize / 2.0);
+    }
+
+    /// Color Change? ///
+    public void setColorChange(boolean colorChange) {
+        this.colorChange = colorChange;
+    }
+
+    /// Spinning? ///
+    public void setSpin(boolean spin) {
+        this.spin = spin;
     }
 
     /// Animate? ///
@@ -298,14 +342,15 @@ public class TilingsDrawer extends JPanel implements Runnable {
         this.animate = animate;
     }
 
-    /// Animate? ///
+    /// Frame Number ///
     public void setFrameNum(int frameNum) {
         this.frameNum = frameNum;
     }
 
-    /// Color Change? ///
-    public void setColorChange(boolean colorChange) {
-        this.colorChange = colorChange;
+    /// Animation reset ///
+    public void resetAnimate() {
+        frameNum = 0;
+        animPhase = 1;
     }
 
     /// Color Step Direction ///
@@ -321,6 +366,16 @@ public class TilingsDrawer extends JPanel implements Runnable {
     /// Outline Color ///
     public void setOutlineColor(Color newColor) {
         this.outlineColor = newColor;
+    }
+
+    /// Color Speed ///
+    public void setColorSpeed(double colorSpeed) {
+        this.colorSpeed = colorSpeed;
+    }
+
+    /// Spin Speed ///
+    public void setSpinSpeed(double spinSpeed) {
+        this.spinSpeed = spinSpeed;
     }
 
     /// Anim Speed ///
@@ -356,14 +411,19 @@ public class TilingsDrawer extends JPanel implements Runnable {
         return displaySize;
     }
 
-    /// Animate? ///
-    public boolean isAnimate() {
-        return this.animate;
-    }
-
     /// Color Change? ///
     public boolean isColorChange() {
         return this.colorChange;
+    }
+
+    /// Spinning? ///
+    public boolean isSpin() {
+        return this.spin;
+    }
+
+    /// Animate? ///
+    public boolean isAnimate() {
+        return this.animate;
     }
 
     /// Color Step Direction ///
@@ -379,6 +439,16 @@ public class TilingsDrawer extends JPanel implements Runnable {
     /// Outline Color ///
     public Color getOutlineColor() {
         return this.outlineColor;
+    }
+
+    /// Color Speed ///
+    public double getColorSpeed() {
+        return this.colorSpeed;
+    }
+
+    /// Anim Speed ///
+    public double getSpinSpeed() {
+        return this.spinSpeed;
     }
 
     /// Anim Speed ///
@@ -420,15 +490,19 @@ public class TilingsDrawer extends JPanel implements Runnable {
         return ((double) paintSize / tempSize) / cellSize;
     }
 
-    public double getScale() {
+    public double getScale(int phase) {
         // Override
-        return 0.0;
+        return (double) phase;
     }
 
     /// Tweening Factor ///
     public double getTweenFactor() {
         // Variables
         int phaseLength = (int) Math.round(FPS / (double) numAnimPhases);
+
+        if (!animate) {
+            phaseLength = 1;
+        }
         
         // Return Tween Factor      
         return (frameNum % phaseLength) / (double) phaseLength;

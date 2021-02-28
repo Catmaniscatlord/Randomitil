@@ -24,8 +24,8 @@ public class TilingsUI extends JPanel {
         setBackground(new Color (240, 240, 240));
         setPreferredSize(new Dimension(300, 300));
 
-        // Setup FlowLayout
-        this.setLayout(new FlowLayout(FlowLayout.LEADING));
+        // Setup Box Layout
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Setup Border
         uiBorder = (EtchedBorder) BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
@@ -35,6 +35,17 @@ public class TilingsUI extends JPanel {
 
         // Add Control Panels
         this.addControlPanels();
+    }
+
+    /// Create Box Gaps Between Components
+    protected void addBoxGap() {
+        // Create Gap Dimensions
+        Dimension maxGapSize = new Dimension(525, 10);
+        Dimension preferredGapSize = new Dimension(420, 8);
+        Dimension minGapSize = new Dimension(210, 4);
+
+        // Return Filler
+        this.add(new Box.Filler(minGapSize, preferredGapSize, maxGapSize));
     }
 
     /// Add Control Panels ///

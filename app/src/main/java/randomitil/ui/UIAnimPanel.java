@@ -34,33 +34,61 @@ public class UIAnimPanel extends JPanel {
 
         // Button Instantiation
         JButton playButton = new JButton("Play/Pause");
-        JToggleButton animateToggle = new JToggleButton("Animate?");
+        JToggleButton spinToggle = new JToggleButton("Party Time");
         JSlider animSpeedSlider = new JSlider(0, 10, 1);
-        JSlider sizeSlider = new JSlider(0, 10, 1);
+        JFormattedTextField sizeField = new JFormattedTextField();
+
+        sizeField.setValue(Integer.valueOf(2));
         
 
         // Adding Listeners to Buttons
-        playButton.addActionListener(e -> 
-            animator.setAutoAnimate(!animator.isAutoAnimate())
-        );
+        playButton.addActionListener(e -> {
+            animator.setAutoAnimate(!animator.isAutoAnimate());
+        });
 
-        animateToggle.addActionListener(e -> 
-            drawer.setAnimate(animateToggle.isSelected())
-        );
+        spinToggle.addActionListener(e -> {
+            drawer.setSpin(spinToggle.isSelected());
+        });
 
         animSpeedSlider.addChangeListener(e -> 
             drawer.setAnimSpeed(animSpeedSlider.getValue())
         );
 
-        sizeSlider.addChangeListener(e -> 
-            animator.setFinalSize(sizeSlider.getValue())
-        );
+        sizeField.addActionListener(e -> {
+            if ((int) sizeField.getValue() > 2) {
+                animator.setFinalSize((int) sizeField.getValue());
+            } else {
+                sizeField.setValue(Integer.valueOf(2));
+            }
+        });
 
-        // Add Buttons to Panel
+        // Setup Labels
+        JLabel animSpeedLabel = new JLabel("Animation Speed:", 4);
+        JLabel sizeLabel = new JLabel("Target Size:", 4);
+
+        animSpeedLabel.setLabelFor(animSpeedSlider);
+        sizeLabel.setLabelFor(sizeField);
+
+        // Add Buttons & labels to Panel
         this.add(playButton);
-        this.add(animateToggle);
+
+        this.add(spinToggle);
+
+        this.add(animSpeedLabel);
         this.add(animSpeedSlider);
-        this.add(sizeSlider);
+
+        this.add(sizeLabel);
+        this.add(sizeField);
+
+        // Set Size
+        setSize();
+    }
+
+    /// Setting Sizes Method ///
+    private void setSize() {
+        this.setMaximumSize(new Dimension(525, 140));
+        this.setPreferredSize(new Dimension(420, 112));
+        this.setMinimumSize(new Dimension(210, 56));
     }
 
     /// Setter Methods ///--------------------------

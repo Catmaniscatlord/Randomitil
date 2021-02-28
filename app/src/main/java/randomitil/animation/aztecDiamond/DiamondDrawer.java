@@ -44,14 +44,10 @@ public class DiamondDrawer extends TilingsDrawer {
         this.expansionRate = diamondIterator.getExpansionRate();
     }
 
-    /// Transform Method ///
+    /// Change paint offsets ///
     @Override
-    protected void setBoardTranslate(Graphics2D g2D) {
-        // Variables
-        int drawOffset = (int) Math.round((cellSize / 2.0) * getScale());
-        
-        // Translate origin down to middle
-        g2D.translate(drawOffset, (int) Math.round(paintSize / 2.0));
+    protected void changePaintOffsets() {
+        paintXOffset = (int) Math.round(cellSize / 2.0 - cellSize / getScale(getAnimPhase()));
     }
 
     /// Finding Coordinates ///
@@ -95,6 +91,10 @@ public class DiamondDrawer extends TilingsDrawer {
         newCoords[0] += Math.round((nextCoords[0] - newCoords[0]) * getTweenFactor());
         newCoords[1] += Math.round((nextCoords[1] - newCoords[1]) * getTweenFactor());
         }
+
+        // Offset Coords
+        newCoords[0] += paintXOffset;
+        newCoords[1] += paintYOffset;
 
         // Return coords
         return newCoords;
@@ -146,7 +146,7 @@ public class DiamondDrawer extends TilingsDrawer {
         }
     }
 
-    /// Diamond Drawing Method ///
+    /// Main Diamond Drawing Method ///
     @Override
     protected void drawTiling(Graphics2D g2D, double scale) {
         // Setup Variables
@@ -159,7 +159,7 @@ public class DiamondDrawer extends TilingsDrawer {
         int[] coords;
         
         // Size and tile Adjustment
-        if (!isAnimate() || getAnimPhase() == 3) {
+        if (!isAnimate() || prevSize == 0 || getAnimPhase() == 3) {
             drawTiles = mainTiles;
             size = boardSize;
         }
@@ -182,7 +182,7 @@ public class DiamondDrawer extends TilingsDrawer {
                     coords = getCoords(i, j, cellStep, dom, getPhaseMove());
 
                     // Change drawing based on direction
-                    drawDominoDirection(g2D, dom, coords[0], coords[1], scale, getPhaseAlpha( i, j));
+                    drawDominoDirection(g2D, dom, coords[0], coords[1], scale, getPhaseAlpha(getAnimPhase(), i, j));
 
                     // Skip over Null Domino
                     j++;
@@ -193,32 +193,33 @@ public class DiamondDrawer extends TilingsDrawer {
 
     /// Control phase scaling ///
     @Override
-    public double getScale() {
-        // Nonanimated scaling
-        if (!isAnimate()) {
+    public double getScale(int phase) {
+        // Scaling Decision
+        if (!isAnimate() || (isAnimate() && phase == 3)) {
+            // Return New Scale for phase 3 && inanimate state
             return getNewScale();
         } else {
-            // Move Scaling during phase 2
-            if (getAnimPhase() == 2 || getNumAnimPhases() == 1) {
+            if (phase == 2) {
+                // Return Moving Scale for Phase 2
                 return getAdaptedScale();
+            } else {
+                // Return Old Scale for phase 1
+                return getOldScale();
             }
         }
-
-        // Default return
-        return getOldScale();
     }
 
     /// Control phase Alpha ///
-    private int getPhaseAlpha(int i, int j) {
+    private int getPhaseAlpha(int phase, int i, int j) {
         // Changing Alpha
         if (isAnimate()) {
             // Fading out
-            if (getAnimPhase() == 1 && getNumAnimPhases() >= 2 && removedTiles.getTile(i, j) != null) {
+            if (phase == 1 && getNumAnimPhases() >= 2 && removedTiles != null  && removedTiles.getTile(i, j) != null) {
                 return (int) Math.round(255 - 255 * getTweenFactor());
             }
 
             // Fading in
-            if (getAnimPhase() == 3 && newTiles.getTile(i, j) != null) {
+            if (phase == 3 && newTiles != null && newTiles.getTile(i, j) != null) {
                 return (int) Math.round(255 * getTweenFactor());
             }
         }
@@ -230,5 +231,11 @@ public class DiamondDrawer extends TilingsDrawer {
     /// Control phase Movement ///
     private boolean getPhaseMove() {
         return (isAnimate() && (getAnimPhase() == 2 || getNumAnimPhases() == 1));
+    }
+
+    /// Reset Previous Tiles ///
+    public void resetPrevTiles() {
+        prevTiles = null;
+        prevSize = 0;
     }
 }

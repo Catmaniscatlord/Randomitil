@@ -23,8 +23,14 @@ public class DiamondUI extends TilingsUI {
         
         // Add Control Panels
         this.add(new UIDiamondGenPanel((DiamondDrawer) drawer, animator, this.uiBorder));
+        addBoxGap();
+
         this.add(new UIAnimPanel(drawer, animator, this.uiBorder));
+        addBoxGap();
+
         this.add(new UIDiamondColorPanel(drawer, this.uiBorder));
+        addBoxGap();
+
         this.add(new UIColorChangePanel(drawer, this.uiBorder));
     }
 }
