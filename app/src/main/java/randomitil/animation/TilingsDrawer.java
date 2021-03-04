@@ -27,6 +27,7 @@ public class TilingsDrawer extends JPanel implements Runnable {
     private int numAnimPhases = 3;
     private final int FPS = 60;
     private final int DELAY = (int) Math.round(1000.0 / FPS);
+    private int numIterations = 0;
 
     // Drawing Variables
     private int displaySize = 500;
@@ -399,6 +400,11 @@ public class TilingsDrawer extends JPanel implements Runnable {
         this.numAnimPhases = numAnimPhases;
     }
 
+    /// Num of Iterations Done ///
+    public void setNumIterations(int numIterations) {
+        this.numIterations = numIterations;
+    }
+
     /// Animator Object ///
     public void setAnimator(TilingsAnimator animator) {
         this.animator = animator;
@@ -474,6 +480,11 @@ public class TilingsDrawer extends JPanel implements Runnable {
     /// Num of Animation Phases ///
     public int getNumAnimPhases() {
         return this.numAnimPhases;
+    }
+
+    /// Num of Iterations Done ///
+    public int getNumIterations() {
+        return this.numIterations;
     }
 
     /// Scaling Factor ///

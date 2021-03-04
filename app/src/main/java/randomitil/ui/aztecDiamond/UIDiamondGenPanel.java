@@ -31,16 +31,18 @@ public class UIDiamondGenPanel extends JPanel {
         this.setBorder(BorderFactory.createTitledBorder(border, "Generation", TitledBorder.LEFT, TitledBorder.TOP));
 
         // Setup GridLayout
-        this.setLayout(new GridLayout(3, 2, 5, 5));
+        this.setLayout(new GridLayout(4, 2, 5, 5));
 
         // Button Instantiation
         JButton iterateButton = new JButton("Iterate");
         JButton resetButton = new JButton("Reset");
         JFormattedTextField biasField = new JFormattedTextField();
-        JFormattedTextField expRateField = new JFormattedTextField();
+        JFormattedTextField horzExpRateField = new JFormattedTextField();
+        JFormattedTextField vertExpRateField = new JFormattedTextField();
         
         biasField.setValue(Double.valueOf(0.5));
-        expRateField.setValue(Integer.valueOf(1));
+        horzExpRateField.setValue(Integer.valueOf(1));
+        vertExpRateField.setValue(Integer.valueOf(1));
 
         // Adding Listeners to Buttons
         iterateButton.addActionListener(e -> {
@@ -50,38 +52,35 @@ public class UIDiamondGenPanel extends JPanel {
         });
 
         resetButton.addActionListener(e -> 
-            reset(biasField, expRateField)
+            // Reset Tiling
+            reset(biasField, horzExpRateField, vertExpRateField)
         );
 
         biasField.addActionListener(e -> {
+            // Change Bias
             double newBias = Math.min(Math.max(0, (double) biasField.getValue()), 1);
             animator.getIterator().setTilingBias(newBias);
             biasField.setValue(Double.valueOf(newBias));
         });
 
-        expRateField.addActionListener(e -> {
-            // Adjust Text Field Entry
-            int temp = Math.max(1, convertNumOdd((int) expRateField.getValue()));
-            DiamondIteration iterator = (DiamondIteration) animator.getIterator();
+        horzExpRateField.addActionListener(e -> 
+            // Reset For Horizontal Expansion Rate Change
+            reset(biasField, horzExpRateField, vertExpRateField)
+        );
 
-            // Change Expansion Rate
-            if (temp > 1) {
-                iterator.setExpansionRate(temp);
-                expRateField.setValue(Integer.valueOf(temp));
-            } else {
-                expRateField.setValue(Integer.valueOf(1));
-            }
-
-            // Reset For Expansion Rate Change
-            reset(biasField, expRateField);
-        });
+        vertExpRateField.addActionListener(e -> 
+            // Reset For Vertical Expansion Rate Change
+            reset(biasField, horzExpRateField, vertExpRateField)
+        );
 
         // Setup Labels
         JLabel biasLabel = new JLabel(" Generation Bias:", 4);
-        JLabel expRateLabel = new JLabel(" Expansion Rate:", 4);
+        JLabel horzExpRateLabel = new JLabel(" Horizontal Expansion Rate:", 4);
+        JLabel vertExpRateLabel = new JLabel(" Vertical Expansion Rate:", 4);
 
         biasLabel.setLabelFor(biasField);
-        expRateLabel.setLabelFor(expRateField);
+        horzExpRateLabel.setLabelFor(horzExpRateField);
+        vertExpRateLabel.setLabelFor(vertExpRateField);
 
         // Add Buttons & Labels to Panel
         this.add(iterateButton);
@@ -91,28 +90,50 @@ public class UIDiamondGenPanel extends JPanel {
         this.add(biasLabel);
         this.add(biasField);
 
-        this.add(expRateLabel);
-        this.add(expRateField);
+        this.add(horzExpRateLabel);
+        this.add(horzExpRateField);
+
+        this.add(vertExpRateLabel);
+        this.add(vertExpRateField);
 
         // Set Size
         setSize();
     }
 
     /// Reset Method ///
-    private void reset(JFormattedTextField biasField, JFormattedTextField expRateField) {
+    private void reset(JFormattedTextField biasField, JFormattedTextField horzExpRateField, JFormattedTextField vertExpRateField) {
         if (!drawer.isAnimate()) {
+            // Get Iterator
             DiamondIteration iterator = (DiamondIteration) animator.getIterator();
-            int temp = Math.max(1, convertNumOdd((int) expRateField.getValue()));
-            iterator.setExpansionRate(temp);
 
-            if (temp == 1) {
-                animator.setupTiling();
+            // Get Expansion Rates
+            int horzExp = Math.max(1, convertNumOdd((int) horzExpRateField.getValue()));
+            int vertExp = Math.max(1, convertNumOdd((int) vertExpRateField.getValue()));
+
+            // Set Rate Fields
+            horzExpRateField.setValue(Integer.valueOf(horzExp));
+            vertExpRateField.setValue(Integer.valueOf(vertExp));
+
+            // Get Bias
+            double bias = Math.min(Math.max(0, (double) biasField.getValue()), 1);
+
+            // Set Bias Field
+            biasField.setValue(Double.valueOf(bias));
+
+            // Setup for Expansion Rates
+            if (horzExp == vertExp) {
+                if (horzExp == 1) {
+                    animator.setupTiling();
+                } else {
+                    animator.sameRateSetup(horzExp);
+                }
             } else {
-                animator.sameRateSetup(Math.max(1, convertNumOdd((int) expRateField.getValue())));
+                animator.diffRateSetup(horzExp, vertExp);
             }
 
+            // Last Setup Fix
             drawer.resetPrevTiles();
-            iterator.setTilingBias(Math.min(Math.max(0, (double) biasField.getValue()), 1));
+            iterator.setTilingBias(bias);
         }
     }
 

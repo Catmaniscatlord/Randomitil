@@ -27,7 +27,7 @@ public class UIColorChangePanel extends JPanel {
 
         // Button Instantiation
         JToggleButton colorChangeToggle = new JToggleButton("Color Rotation", false);
-        JButton colorStopButton = new JButton("Reset Rotation");
+        JButton colorStopButton = new JButton("Reset");
         JSlider colorSpeedSlider = new JSlider(0, 10, 1);
         JToggleButton clockwiseToggle = new JToggleButton("Clockwise", true);
         
@@ -67,8 +67,10 @@ public class UIColorChangePanel extends JPanel {
 
         // Setup Labels
         JLabel colorSpeedLabel = new JLabel("Color Rotation Speed:", 4);
+        JLabel colorDirLabel = new JLabel("Color Rotation Direction:", 4);
 
         colorSpeedLabel.setLabelFor(colorSpeedSlider);
+        colorDirLabel.setLabelFor(clockwiseToggle);
 
         // Add Buttons & Labels to Panel
         this.add(colorChangeToggle);
@@ -78,6 +80,7 @@ public class UIColorChangePanel extends JPanel {
         this.add(colorSpeedLabel);
         this.add(colorSpeedSlider);
 
+        this.add(colorDirLabel);
         this.add(clockwiseToggle);
 
         // Set Size
@@ -86,8 +89,8 @@ public class UIColorChangePanel extends JPanel {
 
     /// Setting Sizes Method ///
     private void setSize() {
-        this.setMaximumSize(new Dimension(525, 140));
-        this.setPreferredSize(new Dimension(420, 112));
-        this.setMinimumSize(new Dimension(210, 56));
+        this.setMaximumSize(new Dimension(525, 105));
+        this.setPreferredSize(new Dimension(420, 84));
+        this.setMinimumSize(new Dimension(210, 42));
     }
 }

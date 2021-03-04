@@ -13,7 +13,7 @@ public class DiamondAnimator implements TilingsAnimator {
     private DiamondDrawer drawer;
     private DiamondIteration diamondIterator;
     private boolean autoAnimate = false;
-    private int finalSize = 2;
+    private int numIterate = 1;
 
     /// Constructor ///
     public DiamondAnimator(DiamondDrawer drawer) {
@@ -55,10 +55,12 @@ public class DiamondAnimator implements TilingsAnimator {
 
     /// Automatic Iteration ///
     public void autoIterateTiling() {
-        if (diamondIterator.getTiling().getSize() < finalSize) {
+        if (drawer.getNumIterations() < numIterate) {
             this.iterateTiling();
+            drawer.setNumIterations(drawer.getNumIterations() + 1);
         } else {
             this.autoAnimate = false;
+            drawer.setNumIterations(0);
         }
     }
 
@@ -233,8 +235,8 @@ public class DiamondAnimator implements TilingsAnimator {
     /// Setter Methods ///---------------------------------------------------------------
 
     /// Set Final Size ///
-    public void setFinalSize(int finalSize) {
-        this.finalSize = finalSize;
+    public void setNumIterate(int numIterate) {
+        this.numIterate = numIterate;
     }
 
     /// Set Auto Animate ///
@@ -250,8 +252,8 @@ public class DiamondAnimator implements TilingsAnimator {
     }
 
     /// Get Final Size ///
-    public int getFinalSize() {
-        return this.finalSize;
+    public int getNumIterate() {
+        return this.numIterate;
     }
 
     /// Is Auto Animate? ///

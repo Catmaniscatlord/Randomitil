@@ -152,9 +152,9 @@ public class UIDiamondColorPanel extends JPanel {
 
     /// Setting Sizes Method ///
     private void setSize() {
-        this.setMaximumSize(new Dimension(525, 140));
-        this.setPreferredSize(new Dimension(420, 112));
-        this.setMinimumSize(new Dimension(210, 56));
+        this.setMaximumSize(new Dimension(525, 105));
+        this.setPreferredSize(new Dimension(420, 84));
+        this.setMinimumSize(new Dimension(210, 42));
     }
 
     /// Create Color Dialog Method ///

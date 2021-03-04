@@ -16,13 +16,13 @@ public interface TilingsAnimator {
     public void autoIterateTiling();
 
     // Set Final Size
-    public void setFinalSize(int finalSize);
+    public void setNumIterate(int numIterate);
 
     /// Set Auto Animate ///
     public void setAutoAnimate(boolean autoAnimate);
 
     /// Get Final Size ///
-    public int getFinalSize();
+    public int getNumIterate();
 
     // Is Auto Animate? //
     public boolean isAutoAnimate();

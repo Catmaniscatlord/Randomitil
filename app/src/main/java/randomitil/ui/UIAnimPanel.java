@@ -7,6 +7,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import randomitil.tilings.aztecDiamond.DiamondIteration;
 import randomitil.animation.*;
 
 // Class Declaration
@@ -36,9 +37,9 @@ public class UIAnimPanel extends JPanel {
         JButton playButton = new JButton("Play/Pause");
         JToggleButton spinToggle = new JToggleButton("Party Time");
         JSlider animSpeedSlider = new JSlider(0, 10, 1);
-        JFormattedTextField sizeField = new JFormattedTextField();
+        JFormattedTextField numIterateField = new JFormattedTextField();
 
-        sizeField.setValue(Integer.valueOf(2));
+        numIterateField.setValue(Integer.valueOf(1));
         
 
         // Adding Listeners to Buttons
@@ -54,20 +55,22 @@ public class UIAnimPanel extends JPanel {
             drawer.setAnimSpeed(animSpeedSlider.getValue())
         );
 
-        sizeField.addActionListener(e -> {
-            if ((int) sizeField.getValue() > 2) {
-                animator.setFinalSize((int) sizeField.getValue());
-            } else {
-                sizeField.setValue(Integer.valueOf(2));
+        numIterateField.addActionListener(e -> {
+            // Correct inputted number
+            if ((int) numIterateField.getValue() <= 0) {
+                numIterateField.setValue(Integer.valueOf(1));
             }
+
+            // Set Number of Iterations
+            animator.setNumIterate((int) numIterateField.getValue());
         });
 
         // Setup Labels
         JLabel animSpeedLabel = new JLabel("Animation Speed:", 4);
-        JLabel sizeLabel = new JLabel("Target Size:", 4);
+        JLabel numIterateLabel = new JLabel("Number of Iterations:", 4);
 
         animSpeedLabel.setLabelFor(animSpeedSlider);
-        sizeLabel.setLabelFor(sizeField);
+        numIterateLabel.setLabelFor(numIterateField);
 
         // Add Buttons & labels to Panel
         this.add(playButton);
@@ -77,8 +80,8 @@ public class UIAnimPanel extends JPanel {
         this.add(animSpeedLabel);
         this.add(animSpeedSlider);
 
-        this.add(sizeLabel);
-        this.add(sizeField);
+        this.add(numIterateLabel);
+        this.add(numIterateField);
 
         // Set Size
         setSize();
@@ -86,9 +89,9 @@ public class UIAnimPanel extends JPanel {
 
     /// Setting Sizes Method ///
     private void setSize() {
-        this.setMaximumSize(new Dimension(525, 140));
-        this.setPreferredSize(new Dimension(420, 112));
-        this.setMinimumSize(new Dimension(210, 56));
+        this.setMaximumSize(new Dimension(525, 105));
+        this.setPreferredSize(new Dimension(420, 84));
+        this.setMinimumSize(new Dimension(210, 42));
     }
 
     /// Setter Methods ///--------------------------
