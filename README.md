@@ -4,7 +4,7 @@
 David Chamberlain & Remy Mujynya
 
 ## Description
-Generates and displays random domino tilings for aztec diamonds. For most circumstances this generation results in a circular region of chaos called an arctic circle. The relevant math and demonstration of the generation algorithm can be found [here](https://youtu.be/Yy7Q8IWNfHM). This program allows the user to mess with setting controlling how the diamond is generated and displayed to see unique distortions of the default case.
+Generates and displays random domino tilings for aztec diamonds. For most circumstances this generation results in a circular region of chaos called an arctic circle. The relevant math and demonstration of the generation algorithm can be found [here](https://youtu.be/Yy7Q8IWNfHM). This program allows the user to mess with variables controlling how the diamond is generated and displayed resulting in unique distortions of the default case.
 
 ## Instructions
 1. Have Java 15 or higher installed
